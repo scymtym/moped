@@ -42,7 +42,7 @@
   "")
 
 
-;;; Naming functions for class meta objects
+;;; Naming functions for class metaobjects
 ;;
 
 (defun find-class (name)
@@ -58,6 +58,7 @@
     name direct-superclasses direct-slots options)
    eieio-naming-classes)) ;; TODO who should do the puthashing?
 
+;; TODO not part of naming infrastructure
 ;; TODO should be generic
 (defun ensure-class-using-class (class name direct-superclasses direct-slots options)
   ""
@@ -87,7 +88,7 @@
      :direct-slots        direct-slots)))
 
 
-;;; Naming functions for generic function meta objects
+;;; Naming functions for generic function metaobjects
 ;;
 
 (defun find-generic-function (name)
@@ -103,6 +104,7 @@
     name args options)
    eieio-naming-generic-functions)) ;; TODO who should do the puthashing?
 
+;; TODO not part of naming infrastructure
 ;; TODO should be generic
 (defun ensure-generic-function-using-class (class name args options)
   ""
@@ -126,31 +128,32 @@
      :args args)))
 
 
-;;; Naming functions for method meta objects
+;;; Naming functions for method metaobjects
 ;;
 
-(defun find-method (name)
+(defun find-method (name specializers)
   ""
   )
 
-(defun ensure-method (name qualifiers args)
+(defun ensure-method (name qualifiers args doc body)
   ""
   (ensure-method-using-class
    (find-class name)
-   name qualifiers args)
-  )
+   name qualifiers args doc body))
 
-(defun ensure-method-using-class (class name qualifiers args)
+;; TODO should be generic
+;; TODO not part of naming infrastructure
+(defun ensure-method-using-class (class name qualifiers args doc body)
   ""
   (if class
       (ensure-method-using-class-existing class name qualifiers args)
     (ensure-method-using-class-null class name qualifiers args)))
 
-(defun ensure-method-using-class-existing (class name qualifiers args)
+(defun ensure-method-using-class-existing (class name qualifiers args doc body)
   ""
   (error "changing method metaobjects is not supported"))
 
-(defun ensure-method-using-class-null (class name qualifiers args)
+(defun ensure-method-using-class-null (class name qualifiers args doc body)
   ""
   (make-instance
    class
@@ -158,9 +161,20 @@
    :qualifiers qualifiers
    :args       args))
 
+
+;;; Naming functions for method-combination metaobjects
+;;
+
+
 (defun find-method-combination (name)
   ""
   )
+
+(defun ensure-method-combination (name)
+  ""
+  (ensure-method-combination-using-class
+   (find-class name)
+   name))
 
 
 ;;; Utility functions

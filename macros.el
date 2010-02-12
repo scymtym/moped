@@ -83,12 +83,11 @@
   (multiple-value-bind (qualifiers args doc body)
       (eieio-macros-parse-defmethod-qualifiers-args-doc-body
        qualifiers-args-doc-body)
-    `(eieio-define-method
-      (:name       (quote ,name))
-      (:qualifiers (quote ,qualifiers))
-      (:args       (quote ,args))
-      (:doc        ,doc)
-      (:body       (quote ,body)))))
+    `(ensure-method (quote ,name)
+		    (quote ,qualifiers)
+		    (quote ,args)
+		    ,doc
+		    (quote ,body))))
 
 
 ;;; Utility Functions
