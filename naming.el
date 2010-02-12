@@ -32,10 +32,10 @@
 ;;; Code:
 ;;
 
-(defvar eieio-naming-classes (make-hash-table :test 'eq)
+(defvar eieio-naming-classes (make-hash-table :test 'equal)
   "")
 
-(defvar eieio-naming-generics (make-hash-table)
+(defvar eieio-naming-generic-functions (make-hash-table :test 'equal)
   "")
 
 (defvar eieio-naming-methods (make-hash-table)
@@ -56,13 +56,14 @@
    (ensure-class-using-class
     (find-class name)
     name direct-superclasses direct-slots options)
-   eieio-naming-classes))
+   eieio-naming-classes)) ;; TODO who should do the puthashing?
 
 ;; TODO should be generic
 (defun ensure-class-using-class (class name direct-superclasses direct-slots options)
   ""
-  (let ((direct-superclasses-objects (mapcar #'eieio-naming-maybe-create-forward-class
-					     direct-superclasses)))
+  (let ((direct-superclasses-objects
+	 (mapcar #'eieio-naming-maybe-create-forward-class
+		 direct-superclasses)))
     (if class
 	(ensure-class-using-class-existing
 	 class name direct-superclasses-objects direct-slots options)
@@ -71,7 +72,7 @@
 
 (defun ensure-class-using-class-existing (class name direct-superclasses direct-slots options)
   ""
-  (error "changing classes is not implemented"))
+  (error "changing class metaobjects is not implemented"))
 
 (defun ensure-class-using-class-null (class name direct-superclasses direct-slots options)
   ""
@@ -93,9 +94,36 @@
   ""
   (gethash name eieio-naming-generics))
 
-(defun ensure-generic-function (name)
+(defun ensure-generic-function (name args options)
   ""
+  (puthash
+   name
+   (ensure-generic-function-using-class
+    (find-class name)
+    name args options)
+   eieio-naming-generic-functions)) ;; TODO who should do the puthashing?
+
+;; TODO should be generic
+(defun ensure-generic-function-using-class (class name args options)
+  ""
+  (if class
+      (ensure-generic-function-using-class-existing class name args options)
+    (ensure-generic-function-using-class-null class name args options))
   )
+
+(defun ensure-generic-function-using-class-existing (class name args options)
+  (error "changing generic function metaobjects is not implemented"))
+
+(defun ensure-generic-function-using-class-null (class name args options)
+  (let ((metaclass (find-class (or (plist-get options :metaclass)
+				   'standard-class))))
+    (unless metaclass
+      (error "invalid metaclass"))
+
+    (make-instance
+     metaclass
+     :name name
+     :args args)))
 
 
 ;;; Naming functions for method meta objects
@@ -104,6 +132,31 @@
 (defun find-method (name)
   ""
   )
+
+(defun ensure-method (name qualifiers args)
+  ""
+  (ensure-method-using-class
+   (find-class name)
+   name qualifiers args)
+  )
+
+(defun ensure-method-using-class (class name qualifiers args)
+  ""
+  (if class
+      (ensure-method-using-class-existing class name qualifiers args)
+    (ensure-method-using-class-null class name qualifiers args)))
+
+(defun ensure-method-using-class-existing (class name qualifiers args)
+  ""
+  (error "changing method metaobjects is not supported"))
+
+(defun ensure-method-using-class-null (class name qualifiers args)
+  ""
+  (make-instance
+   class
+   :name       name
+   :qualifiers qualifiers
+   :args       args))
 
 (defun find-method-combination (name)
   ""
@@ -132,5 +185,5 @@
   ""
   (make-instance 'forward-referenced-class)) ;; TODO
 
-(provide 'naming)
+(provide 'eieio/naming)
 ;;; naming.el ends here
