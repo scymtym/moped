@@ -59,14 +59,18 @@
 
   `(ensure-class (quote ,name)
 		 (quote ,direct-superclasses)
-		 ,direct-slots
+		 (quote ,(mapcar #'eieio-macros-normalize-slot-definition
+				 direct-slots))
 		 ,options))
 
-(defmacro defgeneric (name args &rest options)
+(defmacro defgeneric (name args &rest doc-and-options)
   ""
-  `(ensure-generic-function (quote ,name)
-			    (quote ,args)
-			    ,options))
+  (multiple-value-bind (doc options)
+      (eieio-macros-parse-defgeneric-doc-and-options doc-and-options)
+    `(ensure-generic-function (quote ,name)
+			      (quote ,args)
+			      ,doc
+			      (quote ,options))))
 
 (defmacro defmethod (name &rest qualifiers-args-doc-body)
   ""
@@ -83,15 +87,42 @@
   (multiple-value-bind (qualifiers args doc body)
       (eieio-macros-parse-defmethod-qualifiers-args-doc-body
        qualifiers-args-doc-body)
-    `(ensure-method (quote ,name)
-		    (quote ,qualifiers)
-		    (quote ,args)
-		    ,doc
-		    (quote ,body))))
+    (let ((specializers (mapcar
+			 ;; TODO should we really generate the lookup code here?
+			 (lambda (name)
+			   `(find-class (quote ,name))) ;; TODO equal-specializer
+			 (remove-if
+			  #'null
+			  (mapcar #'eieio-macros-extract-specializer
+				  args))))
+	  (arg-names    (mapcar #'eieio-macros-remove-specializer
+				args)))
+      `(ensure-method (quote ,name)
+		      (list ,@specializers)
+		      (quote ,qualifiers)
+		      ,arg-names
+		      ,doc
+		      (quote ,body)))))
 
 
 ;;; Utility Functions
 ;;
+
+(defun eieio-macros-normalize-slot-definition (slot-definition)
+  "TODO"
+  slot-definition)
+
+(defun eieio-macros-parse-defgeneric-doc-and-options (doc-and-options)
+  "TODO"
+  (if (stringp (car doc-and-options))
+      (list (car doc-and-options) (cdr doc-and-options))
+    (list nil doc-and-options)))
+
+(defun eieio-macros-extract-specializer (arg)
+  (if (listp arg) (second arg) nil))
+
+(defun eieio-macros-remove-specializer (arg)
+  (if (listp arg) (first arg) arg))
 
 (defun eieio-macros-parse-defmethod-qualifiers-args-doc-body (qualifiers-args-doc-body)
   ""
