@@ -1,0 +1,122 @@
+2010-06-16  Jan Moringen  <jmoringe@techfak.uni-bielefeld.de>
+
+	Cleanup and minor improvements in bootstrap.el
+	* bootstrap.el (header): added initial content of commentary
+	section
+	(require eieio/impl): new require;
+	(require eieio/macros): new require;
+	(require eieio/standard-class): new require;
+	(eieio-standard-class-num-slots): removed; now in
+	standard-class.el
+	(eieio-standard-class-tag): removed; now in
+	standard-class.el
+	(eieio-standard-class-name): removed; now in
+	standard-class.el
+	(eieio-standard-class-direct-superclasses): removed; now in
+	standard-class.el
+	(eieio-standard-class-subclasses): removed; now in
+	standard-class.el
+	(eieio-standard-class-direct-slots): removed; now in
+	standard-class.el
+	(eieio-standard-class-effective-slots): removed; now in
+	standard-class.el
+	(eieio-make-standard-class): added documentation string
+	(eieio-bootstrap-object-system): define `standard-object',
+	`standard-generic-function' and `standard-method'; improved
+	comments
+
+	Added impl.el which contains some of the core functions
+	* impl.el: new file; contains some of the core functions of the
+	object system
+
+	Improved handling of marco arguments in macros.el
+	* macros.el (defclass): map
+	`eieio-macros-normalize-slot-definition' over direct slots
+	(defgeneric): renamed argument `options' -> `doc-and-options'; use
+	`eieio-macros-parse-defgeneric-doc-and-options' to separate
+	docstring and options; pass docstring and options to
+	`ensure-generic-function'
+	(defmethod): separate arguments into argument names and
+	specializers; pass specializers and argument names to
+	`ensure-method'
+	(eieio-macros-normalize-slot-definition): new function; does
+	nothing for now
+	(eieio-macros-parse-defgeneric-doc-and-options): split list of
+	optional docstring and optional options into those components
+	(eieio-macros-extract-specializer): new function; return
+	specializer of argument
+	(eieio-macros-remove-specializer): new function; return argument
+	name string, potentially after removing the specializer
+
+	Added standard-class.el which contains the metaobject standard-class
+	* standard-class.el: new file; storage layout and methods of the
+	metaobject standard-class
+
+	* naming.el (header): added initial contents to commentary section
+	(require eieio/errors): new require; used to signal specialized
+	error conditions
+	(find-class): added optional argument error-p which controls
+	whether not finding a class should signal an error
+	(find-generic-function): fixed name of hash-table
+	`eieio-naming-generics' -> `eieio-naming-generic-functions'
+	(ensure-generic-function): added argument doc which is passed to
+	`ensure-generic-function-using-class'; fixed call `find-class' ->
+	`find-generic-function'
+	(ensure-generic-function-using-class): renamed argument class ->
+	generic
+	(ensure-generic-function-using-class-existing): renamed argument
+	class -> generic
+	(ensure-generic-function-using-class-null): renamed argument class
+	-> generic; use correct metaclass `standard-class' ->
+	`standard-generic-function'
+	(ensure-method): fixed lookup `find-class' -> `find-method'
+	(ensure-method-using-class): renamed argument class -> method
+	(ensure-method-using-class-existing): renamed argument class ->
+	method
+	(ensure-method-using-class-null): renamed argument class ->
+	method; lookup the metaclass and make an instance of it
+	(ensure-method-combination): fixed lookup `find-class' ->
+	`find-method-combination'
+	(eieio-naming-clear-classes): recreate the hash-table with `equal'
+	test
+	(eieio-naming-create-forward-class): pass name using :name initarg
+
+	Added errors.el in which condition symbols are defined
+	* errors.el: new file; definitions of condition symbols for the
+	object system
+
+2010-02-12  Jan Moringen  <jmoringe@techfak.uni-bielefeld.de>
+
+	Improved ensure-method and friends in naming.el and macros.el
+	* naming.el (find-method): added argument specializers
+	(ensure-method):
+	(ensure-method-using-class):
+	(ensure-method-using-class-existing):
+	(ensure-method-using-class-null): added arguments doc and body
+	(ensure-method-combination): new function; call
+	`ensure-method-combination-using-class'
+	(some comments): meta object -> metaobject
+	* macros.el (defmethod): generate call to `ensure-method'
+
+	Added ensure-* for generic functions and methods in naming.el
+	* naming.el (eieio-naming-classes): use 'equal test
+	(eieio-naming-generic-functions): renamed eieio-naming-generics ->
+	eieio-naming-generic-functions
+	(ensure-class-using-class): cosmetic changes
+	(ensure-class-using-class-existing): improved error message
+	(ensure-generic-function): fixed argument list; added function
+	body
+	(ensure-generic-function-using-class): new function; dispatch to
+	-existing and -null variants
+	(ensure-generic-function-using-class-existing): new function;
+	produce error for now
+	(ensure-generic-function-using-class-null): new function; create
+	generic function metaobject by calling `make-instance'
+	(ensure-method): new function; call `ensure-method-using-class'
+	(ensure-method-using-class): new function; dispatch to -existing
+	and -null variants
+	(ensure-method-using-class-existing): new function; produce error
+	for now
+	(ensure-method-using-class-null): new function; create method
+	metaobject by calling `make-instance'
+	(provide eieio/naming): change naming -> eieio/naming
