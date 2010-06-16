@@ -22,6 +22,11 @@
 
 ;;; Commentary:
 ;;
+;; This file provides then function `eieio-bootstrap-object-systen',
+;; which is used to bootstrap the object system. Namely, it creates
+;; and stores the metaobjects
+;; + `standard-class'
+;; + `forward-referenced-class'
 
 
 ;;; History:
@@ -32,33 +37,18 @@
 ;;; Code:
 ;;
 
+(require 'eieio/impl)
 (require 'eieio/naming)
+(require 'eieio/macros)
+(require 'eieio/standard-class)
 
-;; TODO move to standard.el or something
-(defconst eieio-standard-class-num-slots 26
-  "Number of slots in the class definition object.")
 
-(defconst eieio-standard-class-tag 0
-  "Class's type indicator tag.")
-
-(defconst eieio-standard-class-name 1
-  "Class's symbol (self-referencing.).")
-
-(defconst eieio-standard-class-direct-superclasses 2
-  "Class direct superclasses parent slot.")
-
-(defconst eieio-standard-class-subclasses 3
-  "Class subclasses class slot.")
-
-(defconst eieio-standard-class-direct-slots 4
-  "Class direct superclasses parent slot.")
-
-(defconst eieio-standard-class-effective-slots 5
-  "Class subclasses class slot.")
-
+
+;;; Bootstrap Functions
+;;
 
 (defun eieio-make-standard-class ()
-  ""
+  "Allocate, initialize and return standard-class metaobject."
   (let ((object (make-vector eieio-standard-class-num-slots nil)))
     (aset object eieio-standard-class-tag                 'defclass)
     (aset object eieio-standard-class-name                'standard-class)
@@ -77,12 +67,28 @@
   ;; Clear all classes
   (eieio-naming-clear-classes)
 
-  ;; Create meta object `standard-class'
-  (puthash 'standard-class (eieio-make-standard-class) eieio-naming-classes)
+  ;; Create and store metaobject `standard-class'
+  (puthash 'standard-class (eieio-make-standard-class)
+           eieio-naming-classes)
 
-  ;; Create meta object `forward-referenced-class'
+  ;; Create metaobject `forward-referenced-class'
   ;; TODO superclass standard-object?
   (defclass forward-referenced-class () ())
+
+  (defclass standard-object () ())
+
+  (defclass standard-generic-function-10 (standard-object)
+    ((name         :initarg :name
+		   :type    (or symbol list))
+     (methods      :initarg  :methods
+		   :type     standard-method
+		   :initform nil)
+     (method-class :initarg method-class
+		   :type    standard-class)))
+
+  (defclass standard-method (standard-object)
+    ((specializers :initarg :specializers
+		   :type    list)))
 
   nil)
 
