@@ -26,6 +26,8 @@
 
 ;;; History:
 ;;
+;; 0.2 - Changed prefix to moped
+;;
 ;; 0.1 - Initial version.
 
 
@@ -39,26 +41,26 @@
 				     (or load-file-name
 					 (buffer-file-name)))
 				    ".."))))
-  (require 'eieio/naming)
-  (require 'eieio/macros)
-  (require 'eieio/bootstrap))
+  (require 'moped/naming)
+  (require 'moped/macros)
+  (require 'moped/bootstrap))
 
 (defmacro with-fresh-object-system (&rest forms)
   ""
   `(progn
-     (eieio-naming-clear-classes)
-     (eieio-bootstrap-object-system)
+     (moped-naming-clear-classes)
+     (moped-bootstrap-object-system)
      ,@forms))
 
 (defmacro without-object-system-modification (&rest forms)
   ""
-  `(let ((eieio-naming-classes
-	  (copy-hash-table eieio-naming-classes))
-	 (eieio-naming-generic-functions
-	  (copy-hash-table eieio-naming-generic-functions))
-	 (eieio-naming-methods
-	  (copy-hash-table eieio-naming-methods)))
+  `(let ((moped-naming-classes
+	  (copy-hash-table moped-naming-classes))
+	 (moped-naming-generic-functions
+	  (copy-hash-table moped-naming-generic-functions))
+	 (moped-naming-methods
+	  (copy-hash-table moped-naming-methods)))
      ,@forms))
 
-(provide 'eieio/test)
+(provide 'moped/test)
 ;;; test.el ends here
