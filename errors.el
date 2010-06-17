@@ -27,7 +27,9 @@
 
 ;;; History:
 ;;
-;; 0.1 - Initial version
+;; 0.2 - Changed prefix to moped.
+;;
+;; 0.1 - Initial version.
 
 
 ;;; Code:
@@ -43,5 +45,5 @@
 (put 'no-such-class 'error-message
      "No such class")
 
-(provide 'eieio/errors)
+(provide 'moped/errors)
 ;;; errors.el ends here

@@ -33,34 +33,36 @@
 
 ;;; History:
 ;;
-;; 0.1 - Initial version
+;; 0.2 - Changed prefix to moped.
+;;
+;; 0.1 - Initial version.
 
 
 ;;; Code:
 ;;
 
-(require 'eieio/errors)
+(require 'moped/errors)
 
 
 ;;; Hash-tables for named objects
 ;;
 
-(defvar eieio-naming-classes (make-hash-table :test 'equal)
+(defvar moped-naming-classes (make-hash-table :test 'equal)
   "")
 
-(defvar eieio-naming-generic-functions (make-hash-table :test 'equal)
+(defvar moped-naming-generic-functions (make-hash-table :test 'equal)
   "")
 
-(defvar eieio-naming-methods (make-hash-table)
+(defvar moped-naming-methods (make-hash-table)
   "")
 
 
 ;;; Naming functions for class metaobjects
 ;;
 
-(defun find-class (name &optional error-p)
+(defun moped-find-class (name &optional error-p)
   ""
-  (or (gethash name eieio-naming-classes)
+  (or (gethash name moped-naming-classes)
       (when error-p
 	(signal 'no-such-class (list name)))))
 
@@ -69,16 +71,16 @@
   (puthash
    name
    (ensure-class-using-class
-    (find-class name)
+    (moped-find-class name)
     name direct-superclasses direct-slots options)
-   eieio-naming-classes)) ;; TODO who should do the puthashing?
+   moped-naming-classes)) ;; TODO who should do the puthashing?
 
 ;; TODO not part of naming infrastructure?
 ;; TODO should be generic function
 (defun ensure-class-using-class (class name direct-superclasses direct-slots options)
   ""
   (let ((direct-superclasses-objects
-	 (mapcar #'eieio-naming-maybe-create-forward-class
+	 (mapcar #'moped-naming-maybe-create-forward-class
 		 direct-superclasses)))
     (if class
 	(ensure-class-using-class-existing
@@ -92,11 +94,11 @@
 
 (defun ensure-class-using-class-null (class name direct-superclasses direct-slots options)
   ""
-  (let ((metaclass (find-class (or (plist-get options :metaclass)
+  (let ((metaclass (moped-find-class (or (plist-get options :metaclass)
 				   'standard-class)))) ;; TODO Do this lookup earlier?
     (unless metaclass
       (error "invalid metaclass" ))
-    (make-instance
+    (moped-make-instance
      metaclass
      :name                name
      :direct-superclasses direct-superclasses
@@ -108,7 +110,7 @@
 
 (defun find-generic-function (name)
   ""
-  (gethash name eieio-naming-generic-functions))
+  (gethash name moped-naming-generic-functions))
 
 (defun ensure-generic-function (name args doc options)
   ""
@@ -117,7 +119,7 @@
    (ensure-generic-function-using-class
     (find-generic-function name)
     name args doc options)
-   eieio-naming-generic-functions)) ;; TODO who should do the puthashing?
+   moped-naming-generic-functions)) ;; TODO who should do the puthashing?
 
 ;; TODO not part of naming infrastructure
 ;; TODO should be generic
@@ -132,12 +134,12 @@
   (error "changing generic function metaobjects is not implemented"))
 
 (defun ensure-generic-function-using-class-null (generic name args options)
-  (let ((metaclass (find-class (or (plist-get options :metaclass)
+  (let ((metaclass (moped-find-class (or (plist-get options :metaclass)
 				   'standard-generic-function))))
     (unless metaclass
       (error "invalid metaclass"))
 
-    (make-instance
+    (moped-make-instance
      metaclass
      :name name
      :args args)))
@@ -170,12 +172,12 @@
 
 (defun ensure-method-using-class-null (method name qualifiers args doc body)
   ""
-  (let ((metaclass (find-class (or (plist-get options :metaclass)
+  (let ((metaclass (moped-find-class (or (plist-get options :metaclass)
 				   'standard-method))))
     (unless metaclass
       (error "invalid metaclass"))
 
-    (make-instance
+    (moped-make-instance
      metaclass
      :name       name
      :qualifiers qualifiers
@@ -199,25 +201,25 @@
 ;;; Utility functions
 ;;
 
-(defun eieio-naming-clear-classes ()
+(defun moped-naming-clear-classes ()
   ""
-  (setq eieio-naming-classes (make-hash-table :test 'equal)))
+  (setq moped-naming-classes (make-hash-table :test 'equal)))
 
-(defun eieio-naming-maybe-find-class (name-or-class)
+(defun moped-naming-maybe-moped-find-class (name-or-class)
   ""
   (if (symbolp name-or-class)  ;; TODO ugly and maybe wrong
-      (find-class name-or-class)
+      (moped-find-class name-or-class)
     name-or-class))
 
-(defun eieio-naming-maybe-create-forward-class (name-or-class)
+(defun moped-naming-maybe-create-forward-class (name-or-class)
   ""
-  (or (eieio-naming-maybe-find-class name-or-class)
-      (eieio-naming-create-forward-class name-or-class)))
+  (or (moped-naming-maybe-moped-find-class name-or-class)
+      (moped-naming-create-forward-class name-or-class)))
 
-(defun eieio-naming-create-forward-class (name)
+(defun moped-naming-create-forward-class (name)
   ""
-  (make-instance 'forward-referenced-class
-		 :name name)) ;; TODO
+  (moped-make-instance 'forward-referenced-class
+		       :name name)) ;; TODO
 
-(provide 'eieio/naming)
+(provide 'moped/naming)
 ;;; naming.el ends here

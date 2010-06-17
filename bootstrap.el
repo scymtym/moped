@@ -22,7 +22,7 @@
 
 ;;; Commentary:
 ;;
-;; This file provides then function `eieio-bootstrap-object-systen',
+;; This file provides then function `moped-bootstrap-object-systen',
 ;; which is used to bootstrap the object system. Namely, it creates
 ;; and stores the metaobjects
 ;; + `standard-class'
@@ -31,54 +31,55 @@
 
 ;;; History:
 ;;
+;; 0.2 - Changed prefix to moped
+;;
 ;; 0.1 - Initial version
 
 
 ;;; Code:
 ;;
 
-(require 'eieio/impl)
-(require 'eieio/naming)
-(require 'eieio/macros)
+(require 'moped/impl)
+(require 'moped/naming)
+(require 'moped/macros)
 
-(require 'eieio/metaobjects/standard-class)
-
+(require 'moped/metaobjects/standard-class)
 
 
 ;;; Bootstrap Functions
 ;;
 
-(defun eieio-make-standard-class ()
+(defun moped-make-standard-class ()
   "Allocate, initialize and return standard-class metaobject."
-  (let ((object (make-vector eieio-standard-class-num-slots nil)))
-    (aset object eieio-standard-class-tag                 'defclass)
-    (aset object eieio-standard-class-name                'standard-class)
-    (aset object eieio-standard-class-direct-superclasses nil)
-    (aset object eieio-standard-class-subclasses          nil)
-    (aset object eieio-standard-class-direct-slots        nil)
-    (aset object eieio-standard-class-effective-slots     nil)
+  (let ((object (make-vector moped-standard-class-num-slots nil)))
+    (aset object moped-standard-class-tag                 'moped-defclass)
+    (aset object moped-standard-class-name                'standard-class)
+    (aset object moped-standard-class-direct-superclasses nil)
+    (aset object moped-standard-class-subclasses          nil)
+    (aset object moped-standard-class-direct-slots        nil)
+    (aset object moped-standard-class-effective-slots     nil)
     object))
 
 
 ;;; Actual Bootstrap Sequence
 ;;
 
-(defun eieio-bootstrap-object-system ()
+(defun moped-bootstrap-object-system ()
   ""
   ;; Clear all classes
-  (eieio-naming-clear-classes)
+  (moped-naming-clear-classes)
 
   ;; Create and store metaobject `standard-class'
-  (puthash 'standard-class (eieio-make-standard-class)
-           eieio-naming-classes)
+  (puthash 'standard-class (moped-make-standard-class)
+           moped-naming-classes)
 
   ;; Create metaobject `forward-referenced-class'
   ;; TODO superclass standard-object?
-  (defclass forward-referenced-class () ())
+  (moped-defclass forward-referenced-class () ())
 
-  (defclass standard-object () ())
+  (moped-defclass standard-object () ())
 
-  (defclass standard-generic-function-10 (standard-object)
+  (moped-defclass standard-generic-function-10 (standard-object)
     ((name         :initarg :name
 		   :type    (or symbol list))
      (methods      :initarg  :methods
@@ -87,11 +88,11 @@
      (method-class :initarg method-class
 		   :type    standard-class)))
 
-  (defclass standard-method (standard-object)
+  (moped-defclass standard-method (standard-object)
     ((specializers :initarg :specializers
 		   :type    list)))
 
   nil)
 
-(provide 'eieio/bootstrap)
+(provide 'moped/bootstrap)
 ;;; bootstrap.el ends here

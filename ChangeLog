@@ -1,3 +1,138 @@
+2010-06-17  Jan Moringen  <jmoringe@techfak.uni-bielefeld.de>
+
+	Added/changed prefix from eieio to moped
+	* test.el (header): bumped version to 0.2
+	(require moped/naming): renamed eieio/naming -> moped/naming
+	(require moped/macros): renamed eieio/macros -> moped/macros
+	(require moped/bootstrap): renamed eieio/bootstrap ->
+	moped/bootstrap
+	(with-fresh-object-system): changed prefix of called functions
+	(without-object-system-modification): changed prefix of called
+	functions
+	(provide moped/test): renamed eieio/test -> moped/test
+	* standard-class.el (header): bumped version to 0.2
+	(moped-standard-class-num-slots): renamed
+	`eieio-standard-class-num-slots' ->
+	`moped-standard-class-num-slots'
+	(moped-standard-class-tag): renamed `eieio-standard-class-tag' ->
+	`moped-standard-class-tag'
+	(moped-standard-class-class): renamed `eieio-standard-class-class'
+	-> `moped-standard-class-class'
+	(moped-standard-class-name): renamed `eieio-standard-class-name'
+	-> `moped-standard-class-name'
+	(moped-standard-class-direct-superclasses): renamed
+	`eieio-standard-class-direct-superclasses' ->
+	`moped-standard-class-direct-superclasses'
+	(moped-standard-class-subclasses): renamed
+	`eieio-standard-class-subclasses' ->
+	`moped-standard-class-subclasses'
+	(moped-standard-class-direct-slots): renamed
+	`eieio-standard-class-direct-slots' ->
+	`moped-standard-class-direct-slots'
+	(moped-standard-class-effective-slots): renamed
+	`eieio-standard-class-effective-slots' ->
+	`moped-standard-class-effective-slots'
+	(moped-make-instance-standard-class): renamed
+	`eieio-make-instance-standard-class' ->
+	`moped-make-instance-standard-class'; changed prefix of called
+	functions
+	(moped-allocate-instance-standard-class): renamed
+	`eieio-allocate-instance-standard-class' ->
+	`moped-allocate-instance-standard-class'; changed prefix of called
+	functions
+	(moped-initialize-instance-standard-class): renamed
+	`eieio-initialize-instance-standard-class' ->
+	`moped-initialize-instance-standard-class'; changed prefix of
+	called functions
+	(moped-slot-value-using-class-standard-class): renamed
+	`eieio-slot-value-using-class-standard-class' ->
+	`moped-slot-value-using-class-standard-class'; changed prefix of
+	called functions
+	(provide moped/standard-class): renamed eieio/standard-class ->
+	moped/standard-class
+	* naming.el (header): bumped version to 0.2
+	(require moped/errors): renamed eieio/errors -> moped/errors
+	(moped-naming-classes): renamed `eieio-naming-classes' ->
+	`moped-naming-classes'
+	(moped-naming-generic-functions'): renamed
+	`eieio-naming-generic-functions' ->
+	`moped-naming-generic-functions'
+	(moped-naming-methods): `eieio-naming-methods' ->
+	`moped-naming-methods'
+	(moped-find-class): renamed `find-class' -> `moped-find-class';
+	changed prefix of called functions
+	(ensure-class): changed prefix of called functions
+	(ensure-class-using-class): changed prefix of called functions
+	(ensure-class-using-class): changed prefix of called functions
+	(find-generic-function): changed prefix of called functions
+	(ensure-generic-function): changed prefix of called functions
+	(ensure-generic-function-using-class-null): changed prefix of
+	called functions
+	(ensure-method-using-class-null): changed prefix of called
+	functions
+	(moped-naming-clear-classes): renamed `eieio-naming-clear-classes'
+	-> `moped-naming-clear-classes'
+	(moped-naming-maybe-find-class): renamed
+	`eieio-naming-maybe-find-class' -> `moped-naming-maybe-find-class'
+	(moped-naming-maybe-create-forward-class): renamed
+	`eieio-naming-maybe-create-forward-class' ->
+	`moped-naming-maybe-create-forward-class'
+	(moped-naming-create-forward-class): renamed
+	`eieio-naming-create-forward-class' ->
+	`moped-naming-create-forward-class'
+	(provide moped/naming): renamed eieio/naming -> moped/naming
+	* macros.el (header): bumped version to 0.2
+	(moped-defclass): renamed `defclass' -> `moped-defclass'; changed
+	prefix of called functions
+	(moped-defgeneric): renamed `defgeneric' -> `moped-defgeneric';
+	changed prefix of called functions
+	(moped-defmethod): renamed `defmethod' -> `moped-defmethod';
+	changed prefix of called functions
+	(provide moped/macros): rename eieio/macros -> moped/macros
+	(moped-macros-normalize-slot-definition): renamed
+	`eieio-macros-normalize-slot-definition' ->
+	`moped-macros-normalize-slot-definition'
+	(moped-macros-parse-moped-defgeneric-doc-and-options): renamed
+	`eieio-macros-parse-moped-defgeneric-doc-and-options' ->
+	`moped-macros-parse-moped-defgeneric-doc-and-options'
+	(moped-macros-extract-specializer): renamed
+	`eieio-macros-extract-specializer' ->
+	`moped-macros-extract-specializer'
+	(moped-macros-remove-specializer): renamed
+	`eieio-macros-remove-specializer' ->
+	`moped-macros-remove-specializer'
+	(moped-macros-parse-moped-defmethod-qualifiers-args-doc-body):
+	renamed
+	`eieio-macros-parse-moped-defmethod-qualifiers-args-doc-body' ->
+	`moped-macros-parse-moped-defmethod-qualifiers-args-doc-body'
+	* impl.el (header): bumped version to 0.2
+	(moped-make-instance): renamed `make-instance' ->
+	`moped-make-instance'; changed prefix of called functions
+	(allocate-instance): changed prefix of called functions
+	(moped-initialize-instance): renamed `initialize-instance' ->
+	`moped-initialize-instance'
+	(moped-object-class): renamed `object-class' ->
+	`moped-object-class'; changed prefix of called functions
+	(moped-slot-value): renamed `slot-value' -> `moped-slot-value';
+	changed prefix of called functions
+	(provide moped/impl): renamed eieio/impl -> moped/impl
+	* errors.el (header): bumped version to 0.2
+	(provide moped/errors): renamed eieio/errors -> moped/errors
+	* bootstrap.el (header): bumped version to 0.2
+	(require moped/impl): renamed eieio/impl -> moped/impl
+	(require moped/naming): renamed eieio/naming -> moped/naming
+	(require moped/macros): renamed eieio/macros -> moped/macros
+	(require moped/standard-class): renamed eieio/standard-class ->
+	moped/standard-class
+	(moped-make-standard-class): renamed `eieio-make-standard-class'
+	-> `moped-make-standard-class'
+	(moped-bootstrap-object-system): renamed
+	`moped-bootstrap-object-system' ->
+	`moped-bootstrap-object-system'; changed prefix of called
+	functions
+	(provide moped/bootstrap): renamed eieio/bootstrap ->
+	moped/bootstrap
+
 2010-06-16  Jan Moringen  <jmoringe@techfak.uni-bielefeld.de>
 
 	Cleanup and minor improvements in bootstrap.el

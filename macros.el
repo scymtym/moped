@@ -1,4 +1,4 @@
-;;; macros.el --- EIEIO user interface macros
+;;; macros.el --- MOPED user interface macros
 ;;
 ;; Copyright (C) 2010 Jan Moringen
 ;;
@@ -26,7 +26,9 @@
 
 ;;; History:
 ;;
-;; 0.1 - Initial version
+;; 0.2 - Changed prefix to moped
+;;
+;; 0.1 - Initial version.
 
 
 ;;; Code:
@@ -39,14 +41,14 @@
 ;;; Macros
 ;;
 
-(defmacro defclass (name direct-superclasses direct-slots &rest options)
+(defmacro moped-defclass (name direct-superclasses direct-slots &rest options)
   ""
   ;; TODO Should the lower layers check this?
   (unless (symbolp name)
     (signal 'wrong-type-argument (type-of name)))
   (unless (and (listp direct-superclasses)
 	       (every #'symbolp direct-superclasses))
-    (signal 'wrong-type-argument (type-of direct-superclasses))) ;; TODO use (every #'find-class or #'ensure-class ?
+    (signal 'wrong-type-argument (type-of direct-superclasses))) ;; TODO use (every #'moped-find-class or #'ensure-class ?
   (unless (and (listp direct-slots)
 	       (every #'listp direct-slots))
     (signal 'wrong-type-argument (type-of direct-slots)))
@@ -57,22 +59,24 @@
   ;; duplicate slot options (for some options) are forbidden
   ;; duplicate default-initargs are forbidden
 
-  `(ensure-class (quote ,name)
-		 (quote ,direct-superclasses)
-		 (quote ,(mapcar #'eieio-macros-normalize-slot-definition
-				 direct-slots))
-		 ,options))
+  `(ensure-class
+    (quote ,name)
+    (quote ,direct-superclasses)
+    (quote ,(mapcar #'moped-macros-normalize-slot-definition
+		    direct-slots))
+    ,options))
 
-(defmacro defgeneric (name args &rest doc-and-options)
+(defmacro moped-defgeneric (name args &rest doc-and-options)
   ""
   (multiple-value-bind (doc options)
-      (eieio-macros-parse-defgeneric-doc-and-options doc-and-options)
-    `(ensure-generic-function (quote ,name)
-			      (quote ,args)
-			      ,doc
-			      (quote ,options))))
+      (moped-macros-parse-moped-defgeneric-doc-and-options doc-and-options)
+    `(ensure-generic-function
+      (quote ,name)
+      (quote ,args)
+      ,doc
+      (quote ,options))))
 
-(defmacro defmethod (name &rest qualifiers-args-doc-body)
+(defmacro moped-defmethod (name &rest qualifiers-args-doc-body)
   ""
   (cond
    ((symbolp name)
@@ -85,46 +89,48 @@
     (signal 'wrong-type-argument (list (type-of name)))))
 
   (multiple-value-bind (qualifiers args doc body)
-      (eieio-macros-parse-defmethod-qualifiers-args-doc-body
+      (moped-macros-parse-moped-defmethod-qualifiers-args-doc-body
        qualifiers-args-doc-body)
     (let ((specializers (mapcar
 			 ;; TODO should we really generate the lookup code here?
 			 (lambda (name)
-			   `(find-class (quote ,name))) ;; TODO equal-specializer
+			   `(moped-find-class (quote ,name))) ;; TODO equal-specializer
 			 (remove-if
 			  #'null
-			  (mapcar #'eieio-macros-extract-specializer
+			  (mapcar #'moped-macros-extract-specializer
 				  args))))
-	  (arg-names    (mapcar #'eieio-macros-remove-specializer
+	  (arg-names    (mapcar #'moped-macros-remove-specializer
 				args)))
-      `(ensure-method (quote ,name)
-		      (list ,@specializers)
-		      (quote ,qualifiers)
-		      ,arg-names
-		      ,doc
-		      (quote ,body)))))
+      `(ensure-method
+	(quote ,name)
+	(list ,@specializers)
+	(quote ,qualifiers)
+	,arg-names
+	,doc
+	(quote ,body))))
+  )
 
 
 ;;; Utility Functions
 ;;
 
-(defun eieio-macros-normalize-slot-definition (slot-definition)
+(defun moped-macros-normalize-slot-definition (slot-definition)
   "TODO"
   slot-definition)
 
-(defun eieio-macros-parse-defgeneric-doc-and-options (doc-and-options)
+(defun moped-macros-parse-moped-defgeneric-doc-and-options (doc-and-options)
   "TODO"
   (if (stringp (car doc-and-options))
       (list (car doc-and-options) (cdr doc-and-options))
     (list nil doc-and-options)))
 
-(defun eieio-macros-extract-specializer (arg)
+(defun moped-macros-extract-specializer (arg)
   (if (listp arg) (second arg) nil))
 
-(defun eieio-macros-remove-specializer (arg)
+(defun moped-macros-remove-specializer (arg)
   (if (listp arg) (first arg) arg))
 
-(defun eieio-macros-parse-defmethod-qualifiers-args-doc-body (qualifiers-args-doc-body)
+(defun moped-macros-parse-moped-defmethod-qualifiers-args-doc-body (qualifiers-args-doc-body)
   ""
   (let* ((args-start   (position-if #'listp qualifiers-args-doc-body)) ;; TODO can be nil
 	 (qualifiers   (subseq qualifiers-args-doc-body 0 args-start))
@@ -137,5 +143,5 @@
 			 doc-and-body)))
     (list qualifiers args doc body)))
 
-(provide 'eieio/macros)
+(provide 'moped/macros)
 ;;; macros.el ends here
