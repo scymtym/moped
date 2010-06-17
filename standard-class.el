@@ -41,20 +41,36 @@
 (defconst eieio-standard-class-tag 0
   "Class's type indicator tag.")
 
-(defconst eieio-standard-class-name 1
+(defconst eieio-standard-class-class 1
+  "Class's type indicator tag.")
+
+(defconst eieio-standard-class-name 2
   "Class's symbol (self-referencing.).")
 
-(defconst eieio-standard-class-direct-superclasses 2
+(defconst eieio-standard-class-direct-superclasses 3
   "Class direct superclasses parent slot.")
 
-(defconst eieio-standard-class-subclasses 3
+(defconst eieio-standard-class-subclasses 4
   "Class subclasses class slot.")
 
-(defconst eieio-standard-class-direct-slots 4
+(defconst eieio-standard-class-direct-slots 5
   "Class direct superclasses parent slot.")
 
-(defconst eieio-standard-class-effective-slots 5
+(defconst eieio-standard-class-effective-slots 6
   "Class subclasses class slot.")
+
+
+;;;
+;;
+
+(defun eieio-make-standard-class-metaobject ()
+  "Allocate, initialize and return standard-class metaobject."
+  (let ((instance (make-vector eieio-standard-class-num-slots nil)))
+    (aset instance eieio-standard-class-tag   'object)
+    (aset instance eieio-standard-class-class instance)
+    (eieio-initialize-instance-standard-class
+     instance
+     :name 'standard-class)))
 
 
 ;;; "Methods" of the metaobject standard-class
@@ -64,37 +80,64 @@
   (let ((instance)) ;; TODO errors
 
     ;; Allocate the instance
-    (setq instance (apply #'allocate-instance class initargs))
+    (setq instance (apply #'eieio-allocate-instance-standard-class class initargs))
 
     ;; Initialize the instance
-    (apply #'initialize-instance instance initargs)
+    (apply #'eieio-initialize-instance-standard-class instance initargs)
 
     instance))
 
 (defun eieio-allocate-instance-standard-class (class &rest initargs)
-  (let ((name     (plist-get initargs :name)) ;; TODO can we avoid setting slots here?
-	(instance (make-vector eieio-standard-class-num-slots nil)))
-    (aset instance eieio-standard-class-tag  'defclass)
-    (aset instance eieio-standard-class-name name)
+  (let ((instance (make-vector eieio-standard-class-num-slots nil))
+	(class    (moped-find-class 'standard-class)))
+    (aset instance eieio-standard-class-tag  'object)
+    (aset instance eieio-standard-class-class class)
     instance))
 
 (defun eieio-initialize-instance-standard-class (instance &rest initargs)
-  (let ((name                (plist-get initargs :name))
-	(direct-superclasses (plist-get initargs :direct-superclasses))
-	(direct-slots        (plist-get initargs :direct-slots))
-	(effective-slots     (apply #'append
-				    (mapcar
-				     (lambda (class)
-				       (aref class eieio-standard-class-direct-slots))
-				     direct-superclasses)
-				    (list direct-slots))))
-    (aset instance eieio-standard-class-tag                 'defclass)
+  (let* ((name                (plist-get initargs :name))
+	 (direct-superclasses (plist-get initargs :direct-superclasses))
+	 (direct-slot-specs   (plist-get initargs :direct-slots))
+	 (direct-slots        (mapcar
+			       (lambda (spec)
+				 (apply
+				  #'moped-make-instance
+				  (moped-find-class 'standard-direct-slot-definition)
+				  (cons :name spec)))
+			       direct-slot-specs))
+	 (effective-slots     (apply #'append
+				     direct-slots
+				     (mapcar
+				      (lambda (class)
+					;;(moped-slot-value class :direct-slots)
+					(aref class eieio-standard-class-direct-slots))
+				      direct-superclasses)))) ;; TODO recurse
     (aset instance eieio-standard-class-name                name)
     (aset instance eieio-standard-class-direct-superclasses direct-superclasses)
     (aset instance eieio-standard-class-subclasses          nil)
     (aset instance eieio-standard-class-direct-slots        direct-slots)
     (aset instance eieio-standard-class-effective-slots     effective-slots)
     instance))
+
+(defun eieio-slot-value-using-class-standard-class (instance class slot-name)
+  (case slot-name
+    ((:name 'name)
+     (aref instance eieio-standard-class-name))
+
+    ((:direct-superclasses 'direct-superclasses)
+     (aref instance eieio-standard-class-direct-superclasses))
+
+    ((:subclasses 'subclasses)
+     (aref instance eieio-standard-class-subclasses))
+
+    ((:direct-slots 'direct-slots)
+     (aref instance eieio-standard-class-direct-slots))
+
+    ((:effective-slots 'effective-slots)
+     (aref instance eieio-standard-class-effective-slots))
+
+    (t
+     (moped-slot-missing class instance slot-name 'slot-value))))
 
 (provide 'eieio/standard-class)
 ;;; standard-class.el ends here
