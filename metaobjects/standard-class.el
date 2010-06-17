@@ -21,6 +21,14 @@
 
 ;;; Commentary:
 ;;
+;; Conceptual definition:
+;;
+;; (defclass standard-class ()
+;;  ((name                :name)
+;;   (direct-superclasses :direct-superclasses)
+;;   (subclasses          :subclasses)
+;;   (direct-slots        :direct-slots)
+;;   (effective-slots     :effective-slots)))
 
 
 ;;; History:
@@ -139,5 +147,5 @@
     (t
      (moped-slot-missing class instance slot-name 'slot-value))))
 
-(provide 'eieio/standard-class)
+(provide 'eieio/metaobjects/standard-class)
 ;;; standard-class.el ends here

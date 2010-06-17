@@ -40,7 +40,8 @@
 (require 'eieio/impl)
 (require 'eieio/naming)
 (require 'eieio/macros)
-(require 'eieio/standard-class)
+
+(require 'eieio/metaobjects/standard-class)
 
 
 
