@@ -22,6 +22,13 @@
 
 ;;; Commentary:
 ;;
+;; This file contains the interface macros
+;;
+;; + `defclass'
+;; + `defgeneric'
+;; + `defmethod'
+;;
+;; + `oref'
 
 
 ;;; History:
@@ -38,10 +45,11 @@
   (require 'cl))
 
 
-;;; Macros
+;;; Structure Definition Macros
 ;;
 
-(defmacro moped-defclass (name direct-superclasses direct-slots &rest options)
+(defmacro moped-defclass (name direct-superclasses direct-slots
+			  &rest options)
   ""
   ;; TODO Should the lower layers check this?
   (unless (symbolp name)
@@ -59,22 +67,29 @@
   ;; duplicate slot options (for some options) are forbidden
   ;; duplicate default-initargs are forbidden
 
-  `(ensure-class
-    (quote ,name)
-    (quote ,direct-superclasses)
-    (quote ,(mapcar #'moped-macros-normalize-slot-definition
-		    direct-slots))
-    ,options))
+  (let ((normalized-direct-slots
+	 (mapcar #'moped-macros-normalize-slot-definition
+		 direct-slots)))
+    `(ensure-class (quote ,name)
+		   ,(when direct-superclasses
+		      (list 'quote direct-superclasses))
+		   ,(when normalized-direct-slots
+		      (list 'quote normalized-direct-slots))
+		   ,(when options
+		      (list 'quote options))))
+  )
 
 (defmacro moped-defgeneric (name args &rest doc-and-options)
   ""
   (multiple-value-bind (doc options)
-      (moped-macros-parse-moped-defgeneric-doc-and-options doc-and-options)
-    `(ensure-generic-function
-      (quote ,name)
-      (quote ,args)
-      ,doc
-      (quote ,options))))
+      (moped-macros-parse-defgeneric-doc-and-options doc-and-options)
+    `(ensure-generic-function (quote ,name)
+			      ,(when args
+				(list 'quote args))
+			      ,doc
+			      ,(when options
+				 (list 'quote options))))
+  )
 
 (defmacro moped-defmethod (name &rest qualifiers-args-doc-body)
   ""
@@ -89,26 +104,41 @@
     (signal 'wrong-type-argument (list (type-of name)))))
 
   (multiple-value-bind (qualifiers args doc body)
-      (moped-macros-parse-moped-defmethod-qualifiers-args-doc-body
+      (moped-macros-parse-defmethod-qualifiers-args-doc-body
        qualifiers-args-doc-body)
     (let ((specializers (mapcar
 			 ;; TODO should we really generate the lookup code here?
-			 (lambda (name)
-			   `(moped-find-class (quote ,name))) ;; TODO equal-specializer
-			 (remove-if
-			  #'null
-			  (mapcar #'moped-macros-extract-specializer
-				  args))))
+			 (lambda (spec)
+			   (cond
+			    ((eq spec t)
+			     spec)
+
+			    ((listp spec)
+			     `(TODO-eql-specializer (nth 1 spec)))
+
+			    (t
+			     `(moped-find-class (quote ,spec)))))
+			 (mapcar #'moped-macros-extract-specializer
+				 args)))
 	  (arg-names    (mapcar #'moped-macros-remove-specializer
 				args)))
-      `(ensure-method
-	(quote ,name)
-	(list ,@specializers)
-	(quote ,qualifiers)
-	,arg-names
-	,doc
-	(quote ,body))))
+      `(ensure-method (quote ,name)
+		      ,(when specializers
+			 (cons 'list specializers))
+		      ,(when qualifiers
+			 (list 'quote qualifiers))
+		      ,(when arg-names
+			 (list 'quote arg-names))
+		      ,doc
+		      (quote (progn ,@body))))) ;; TODO test for options
   )
+
+
+;;; Macros
+;;
+
+(defmacro moped-oref (instance slot-name)
+  `(moped-slot-value ,instance (quote ,slot-name)))
 
 
 ;;; Utility Functions
@@ -118,19 +148,21 @@
   "TODO"
   slot-definition)
 
-(defun moped-macros-parse-moped-defgeneric-doc-and-options (doc-and-options)
+(defun moped-macros-parse-defgeneric-doc-and-options (doc-and-options)
   "TODO"
   (if (stringp (car doc-and-options))
       (list (car doc-and-options) (cdr doc-and-options))
     (list nil doc-and-options)))
 
 (defun moped-macros-extract-specializer (arg)
-  (if (listp arg) (second arg) nil))
+  ""
+  (if (listp arg) (second arg) t))
 
 (defun moped-macros-remove-specializer (arg)
+  ""
   (if (listp arg) (first arg) arg))
 
-(defun moped-macros-parse-moped-defmethod-qualifiers-args-doc-body (qualifiers-args-doc-body)
+(defun moped-macros-parse-defmethod-qualifiers-args-doc-body (qualifiers-args-doc-body)
   ""
   (let* ((args-start   (position-if #'listp qualifiers-args-doc-body)) ;; TODO can be nil
 	 (qualifiers   (subseq qualifiers-args-doc-body 0 args-start))
