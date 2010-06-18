@@ -45,7 +45,7 @@
 ;;; Storage layout of standard-class
 ;;
 
-(defconst moped-standard-class-num-slots 26
+(defconst moped-standard-class-num-slots 7
   "Number of slots in the class definition object.")
 
 (defconst moped-standard-class-tag 0
@@ -99,7 +99,7 @@
 
 (defun moped-allocate-instance-standard-class (class &rest initargs)
   (let ((instance (make-vector moped-standard-class-num-slots nil))
-	(class    (moped-moped-find-class 'standard-class)))
+	(class    (moped-find-class 'standard-class)))
     (aset instance moped-standard-class-tag  'object)
     (aset instance moped-standard-class-class class)
     instance))
@@ -112,7 +112,7 @@
 			       (lambda (spec)
 				 (apply
 				  #'moped-make-instance
-				  (moped-moped-find-class 'standard-direct-slot-definition)
+				  (moped-find-class 'standard-direct-slot-definition)
 				  (cons :name spec)))
 			       direct-slot-specs))
 	 (effective-slots     (apply #'append
@@ -131,19 +131,19 @@
 
 (defun moped-slot-value-using-class-standard-class (instance class slot-name)
   (case slot-name
-    ((:name 'name)
+    ((:name name)
      (aref instance moped-standard-class-name))
 
-    ((:direct-superclasses 'direct-superclasses)
+    ((:direct-superclasses direct-superclasses)
      (aref instance moped-standard-class-direct-superclasses))
 
-    ((:subclasses 'subclasses)
+    ((:subclasses subclasses)
      (aref instance moped-standard-class-subclasses))
 
-    ((:direct-slots 'direct-slots)
+    ((:direct-slots direct-slots)
      (aref instance moped-standard-class-direct-slots))
 
-    ((:effective-slots 'effective-slots)
+    ((:effective-slots effective-slots)
      (aref instance moped-standard-class-effective-slots))
 
     (t
