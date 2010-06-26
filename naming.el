@@ -28,7 +28,7 @@
 ;; + classes
 ;; + generic functions
 ;; + methods
-;; + method combination
+;; + method combinations
 
 
 ;;; History:
@@ -48,22 +48,25 @@
 ;;
 
 (defvar moped-naming-classes (make-hash-table :test 'equal)
-  "")
+  "Hash-table that maps names of named classes to the
+corresponding class metaobjects.")
 
 (defvar moped-naming-generic-functions (make-hash-table :test 'equal)
-  "")
+  "Hash-table that maps names of generic functions to the
+  corresponding generic function metaobjects.")
 
-(defvar moped-naming-methods (make-hash-table)
+(defvar moped-naming-methods (make-hash-table :test 'equal)
   "")
 
 
 ;;; Naming functions for class metaobjects
 ;;
 
-(defun moped-find-class (name &optional error-p)
+;; TODO errorp should default to true
+(defun moped-find-class (name &optional errorp)
   ""
   (or (gethash name moped-naming-classes)
-      (when error-p
+      (when errorp
 	(signal 'no-such-class (list name)))))
 
 (defun ensure-class (name direct-superclasses direct-slots options)
@@ -94,10 +97,12 @@
 
 (defun ensure-class-using-class-null (class name direct-superclasses direct-slots options)
   ""
-  (let ((metaclass (moped-find-class (or (plist-get options :metaclass)
-				   'standard-class)))) ;; TODO Do this lookup earlier?
+  (let* ((metaclass-symbol (or (plist-get options :metaclass)
+			       'standard-class))
+	 (metaclass       (moped-find-class metaclass-symbol))) ;; TODO Do this lookup earlier?
     (unless metaclass
-      (error "invalid metaclass" ))
+      (signal 'invalid-metaclass (list metaclass-symbol)))
+
     (moped-make-instance
      metaclass
      :name                name
@@ -123,65 +128,58 @@
 
 ;; TODO not part of naming infrastructure
 ;; TODO should be generic
-(defun ensure-generic-function-using-class (generic name args options)
+(defun ensure-generic-function-using-class (generic name args doc options)
   ""
   (if generic
-      (ensure-generic-function-using-class-existing generic name args options)
-    (ensure-generic-function-using-class-null generic name args options))
+      (ensure-generic-function-using-class-existing generic name args doc options)
+    (ensure-generic-function-using-class-null generic name args doc options))
   )
 
-(defun ensure-generic-function-using-class-existing (generic name args options)
-  (error "changing generic function metaobjects is not implemented"))
+(defun ensure-generic-function-using-class-existing (generic name args doc options)
+  (warn "changing generic function metaobjects is not implemented")
+  generic)
 
-(defun ensure-generic-function-using-class-null (generic name args options)
-  (let ((metaclass (moped-find-class (or (plist-get options :metaclass)
-				   'standard-generic-function))))
+(defun ensure-generic-function-using-class-null (generic name args doc options)
+  (let* ((metaclass-symbol (or (plist-get options :metaclass)
+			       'standard-generic-function))
+	 (metaclass        (moped-find-class metaclass-symbol)))
     (unless metaclass
-      (error "invalid metaclass"))
+      (signal 'invalid-metaclass (list metaclass-symbol)))
 
-    (moped-make-instance
+    (apply
+     #'moped-make-instance
      metaclass
-     :name name
-     :args args)))
+     :name        name
+     :lambda-list args
+     options))
+  )
 
 
 ;;; Naming functions for method metaobjects
 ;;
 
+;; TODO not in CLOS(?) or AMOP
 (defun find-method (name specializers)
   ""
+  (gethash (list name specializers) eieio-naming-methods))
+
+;; TODO not in CLOS(?) or AMOP
+(defun ensure-method (name specializers qualifiers args doc body)
+  ""
+  (let* ((generic-function (ensure-generic-function
+			    name args doc nil))
+	 (method-function  (make-method-lambda
+			    generic-function nil ;; TODO nil is METHOD
+			    `(lambda ,args ,body))) ;; TODO returns multiple values
+	 (method           (moped-make-instance
+			    (moped-find-class 'standard-method) ;; TODO use correct method class
+			    :qualifiers   qualifiers
+			    :lambda-list  args
+			    :specializers specializers
+			    :function     method-function)))
+    (add-method generic-function method)
+    method)
   )
-
-(defun ensure-method (name qualifiers args doc body)
-  ""
-  (ensure-method-using-class
-   (find-method name)
-   name qualifiers args doc body))
-
-;; TODO should be generic
-;; TODO not part of naming infrastructure
-(defun ensure-method-using-class (method name qualifiers args doc body)
-  ""
-  (if method
-      (ensure-method-using-class-existing method name qualifiers args)
-    (ensure-method-using-class-null class method qualifiers args)))
-
-(defun ensure-method-using-class-existing (method name qualifiers args doc body)
-  ""
-  (error "changing method metaobjects is not supported"))
-
-(defun ensure-method-using-class-null (method name qualifiers args doc body)
-  ""
-  (let ((metaclass (moped-find-class (or (plist-get options :metaclass)
-				   'standard-method))))
-    (unless metaclass
-      (error "invalid metaclass"))
-
-    (moped-make-instance
-     metaclass
-     :name       name
-     :qualifiers qualifiers
-     :args       args)))
 
 
 ;;; Naming functions for method-combination metaobjects
@@ -205,7 +203,11 @@
   ""
   (setq moped-naming-classes (make-hash-table :test 'equal)))
 
-(defun moped-naming-maybe-moped-find-class (name-or-class)
+(defun moped-naming-clear-generic-functions ()
+  ""
+  (setq moped-naming-generic-functions (make-hash-table :test 'equal)))
+
+(defun moped-naming-maybe-find-class (name-or-class)
   ""
   (if (symbolp name-or-class)  ;; TODO ugly and maybe wrong
       (moped-find-class name-or-class)
@@ -213,7 +215,7 @@
 
 (defun moped-naming-maybe-create-forward-class (name-or-class)
   ""
-  (or (moped-naming-maybe-moped-find-class name-or-class)
+  (or (moped-naming-maybe-find-class name-or-class)
       (moped-naming-create-forward-class name-or-class)))
 
 (defun moped-naming-create-forward-class (name)
