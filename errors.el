@@ -45,5 +45,65 @@
 (put 'no-such-class 'error-message
      "No such class")
 
+;; invalid-metaclass
+
+(intern "invalid-metaclass")
+
+(put 'invalid-metaclass 'error-conditions
+     '(error invalid-metaclass))
+
+(put 'invalid-metaclass 'error-message
+     "Invalid metaclass")
+
+;; slot-unbound
+
+(intern "slot-unbound")
+
+(put 'slot-unbound 'error-conditions
+     '(error slot-unbound))
+
+(put 'slot-unbound 'error-message
+     "Slot unbound")
+
+;; slot-missing
+
+(intern "slot-missing")
+
+(put 'slot-missing 'error-conditions
+     '(error slot-missing))
+
+(put 'slot-missing 'error-message
+     "Slot missing")
+
+;; class-not-finalized
+
+(intern "class-not-finalized")
+
+(put 'class-not-finalized 'error-conditions
+     '(error class-not-finalized))
+
+(put 'class-not-finalized 'error-message
+     "Class is not finalized")
+
+;; no-applicable-method
+
+(intern "no-applicable-method")
+
+(put 'no-applicable-method 'error-conditions
+     '(error no-applicable-method))
+
+(put 'no-applicable-method 'error-message
+     "No applicable method")
+
+;; no-next-method
+
+(intern "no-next-method")
+
+(put 'no-next-method 'error-conditions
+     '(error no-next-method))
+
+(put 'no-next-method 'error-message
+     "No next method")
+
 (provide 'moped/errors)
 ;;; errors.el ends here
