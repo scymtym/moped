@@ -53,15 +53,15 @@
   ""
   ;; TODO Should the lower layers check this?
   (unless (symbolp name)
-    (signal 'wrong-type-argument (type-of name)))
+    (signal 'wrong-type-argument (list (type-of name))))
   (unless (and (listp direct-superclasses)
 	       (every #'symbolp direct-superclasses))
-    (signal 'wrong-type-argument (type-of direct-superclasses))) ;; TODO use (every #'moped-find-class or #'ensure-class ?
+    (signal 'wrong-type-argument (list (type-of direct-superclasses))))
   (unless (and (listp direct-slots)
 	       (every #'listp direct-slots))
-    (signal 'wrong-type-argument (type-of direct-slots)))
+    (signal 'wrong-type-argument (list (type-of direct-slots))))
   (unless (every #'listp options)
-    (signal 'wrong-type-argument (type-of options)))
+    (signal 'wrong-type-argument (list (type-of options))))
   ;; Further errors:
   ;; duplicate slot names are forbidden
   ;; duplicate slot options (for some options) are forbidden
@@ -111,13 +111,16 @@
 			 (lambda (spec)
 			   (cond
 			    ((eq spec t)
-			     spec)
+			     `(moped-find-class (quote t)))
 
 			    ((listp spec)
 			     `(TODO-eql-specializer (nth 1 spec)))
 
 			    (t
-			     `(moped-find-class (quote ,spec)))))
+			     `(progn
+				(unless (moped-find-class (quote ,spec))
+				  (warn "when defining `%s' could not find specializer `%s'" (quote ,name) (quote ,spec)))
+				(moped-find-class (quote ,spec)))))) ;; TODO should probably use ensure-class
 			 (mapcar #'moped-macros-extract-specializer
 				 args)))
 	  (arg-names    (mapcar #'moped-macros-remove-specializer
