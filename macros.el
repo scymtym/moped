@@ -93,38 +93,22 @@
 
 (defmacro moped-defmethod (name &rest qualifiers-args-doc-body)
   ""
-  (cond
-   ((symbolp name)
-    )
-   ;; Names that are lists are not yet supported
-   ((listp name)
-    (signal 'wrong-type-argument (list 'list))) ;; TODO invalid method name?
-   ;;
-   (t
-    (signal 'wrong-type-argument (list (type-of name)))))
+  ;;
+  (unless (symbolp name) ;; (listp name) Names that are lists are not yet supported
+    (signal 'wrong-type-argument (list (type-of name)))) ;; TODO invalid method name?
 
+  ;;
   (multiple-value-bind (qualifiers args doc body)
       (moped-macros-parse-defmethod-qualifiers-args-doc-body
        qualifiers-args-doc-body)
-    (let ((specializers (mapcar
-			 ;; TODO should we really generate the lookup code here?
-			 (lambda (spec)
-			   (cond
-			    ((eq spec t)
-			     `(moped-find-class (quote t)))
-
-			    ((listp spec)
-			     `(TODO-eql-specializer (nth 1 spec)))
-
-			    (t
-			     `(progn
-				(unless (moped-find-class (quote ,spec))
-				  (warn "when defining `%s' could not find specializer `%s'" (quote ,name) (quote ,spec)))
-				(moped-find-class (quote ,spec)))))) ;; TODO should probably use ensure-class
-			 (mapcar #'moped-macros-extract-specializer
-				 args)))
-	  (arg-names    (mapcar #'moped-macros-remove-specializer
-				args)))
+    (let* ((arg-names           (mapcar #'moped-macros-remove-specializer
+					args))
+	   (specialization-args (moped-macros-extract-specializtion-args
+				 args))
+	   (arg-specializers    (mapcar #'moped-macros-extract-specializer
+					specialization-args))
+	   (specializers        (mapcar #'moped-macros-generate-specializer
+					arg-specializers)))
       `(ensure-method (quote ,name)
 		      ,(when specializers
 			 (cons 'list specializers))
@@ -137,7 +121,7 @@
   )
 
 
-;;; Macros
+;;; Slot Access Macros
 ;;
 
 (defmacro moped-oref (instance slot-name)
@@ -156,6 +140,17 @@
   (if (stringp (car doc-and-options))
       (list (car doc-and-options) (cdr doc-and-options))
     (list nil doc-and-options)))
+
+(defun moped-macros-extract-specializtion-args (args)
+  ""
+  (flet ((position-of (keyword)
+           (or (position keyword args :test #'eq)
+	       most-positive-fixnum)))
+    (let ((index (apply #'min
+			(length args)
+			(mapcar #'position-of '(&optional &rest)))))
+      (subseq args 0 index)))
+  )
 
 (defun moped-macros-extract-specializer (arg)
   ""
@@ -177,6 +172,22 @@
 			   (cdr doc-and-body)
 			 doc-and-body)))
     (list qualifiers args doc body)))
+
+(defun moped-macros-generate-specializer (spec)
+  ""
+  (cond
+   ((eq spec t)
+    `(moped-find-class (quote t)))
+
+   ((listp spec)
+    `(TODO-eql-specializer (nth 1 spec)))
+
+   (t
+    `(progn
+       (unless (moped-find-class (quote ,spec))
+	 (warn "when defining `%s' could not find specializer `%s'" (quote ,name) (quote ,spec)))
+       (moped-find-class (quote ,spec)))))  ;; TODO should probably use ensure-class
+  )
 
 (provide 'moped/macros)
 ;;; macros.el ends here
