@@ -168,17 +168,18 @@ corresponding class metaobjects.")
   ""
   (let* ((generic-function (ensure-generic-function
 			    name args doc nil))
-	 (method-function  (make-method-lambda
-			    generic-function nil ;; TODO nil is METHOD
-			    `(lambda ,args ,body))) ;; TODO returns multiple values
 	 (method           (moped-make-instance
 			    (moped-find-class 'standard-method) ;; TODO use correct method class
 			    :qualifiers   qualifiers
 			    :lambda-list  args
-			    :specializers specializers
-			    :function     method-function)))
-    (add-method generic-function method)
-    method)
+			    :specializers specializers)))
+    (multiple-value-bind (method-function initargs)
+	(make-method-lambda
+	 generic-function method
+	 `(lambda ,args ,body))
+      (moped-set-slot-value method :function method-function)
+      (add-method generic-function method)
+      method))
   )
 
 
