@@ -34,69 +34,83 @@
 ;;; Code:
 ;;
 
-;; TODO this is a generic function
-(defun moped-make-instance (name-or-class &rest initargs) ;; TODO part of the user interface; not impl
+(eval-when-compile
+  (require 'cl))
+
+
+;;; Predicates
+;;
+
+(defun moped-standard-object-instance-p (object)
   ""
-  (cond
-   ((symbolp name-or-class)
-    (apply #'make-instance-symbol name-or-class initargs))
+  (and (vectorp object)
+       (eq (aref object 0) 'object)))
 
-   ((eq name-or-class (moped-find-class 'standard-class))
-    (apply #'moped-make-instance-standard-class name-or-class initargs))
+(defun moped-funcallable-standard-object-instance-p (object)
+  ""
+  (and (listp object)
+       (= (safe-length object) 3)
+       (eq (nth 0 object) 'lambda)
+       (eq (nth 1 (nth 2 object))
+	   'moped-funcallable-standard-object-always-false)))
 
-   (t
-    (error "not implemented")
-    (apply (find-generic-function 'moped-make-instance) name-or-class initargs))))
+(defun moped-object-p (object)
+  ""
+  (or (moped-standard-object-instance-p object)
+      (moped-funcallable-standard-object-instance-p object)))
 
-(defun make-instance-symbol (name &rest initargs)
-  (let ((class (moped-find-class name)))
-    (unless class
-      (signal 'no-such-class (list name)))
-
-    (apply #'moped-make-instance class initargs)))
+
+;;;
+;;
 
 (defun allocate-instance (class &rest initargs)
   ""
   ;; (unless (class-finalized-p class)
   ;;   (finalize-inheritance class))
 
-  (if (eq class (moped-find-class 'standard-class))
+  (if (eq class moped-standard-class-metaobject) ;;(moped-find-class 'standard-class)
       (apply #'moped-allocate-instance-standard-class class initargs)
     (apply (find-generic-function 'allocate-instance) class initargs)))
 
 (defun moped-initialize-instance (instance &rest initargs)
   ""
-  (if (eq (aref instance moped-standard-class-name) (moped-find-class 'standard-class)) ;; TODO
+  (if (eq (aref instance moped-standard-class-name) moped-standard-class-metaobject) ;;(moped-find-class 'standard-class) ;; TODO
       (apply #'moped-initialize-instance-standard-class instance initargs)
     (warn "not implemented: initialize-instance %s %s" instance initargs)))
 
-(defun moped-object-class (instance)
-  (if (eq instance (moped-find-class 'standard-class))
-      (aref instance moped-standard-class-name)
-    (invoke-generic-function
-     (find-generic-function 'object-class)
-     instance)))
+(defun moped-class-of (object)
+  (cond
+   ;; TODO temp?
+   ((moped-standard-object-instance-p object)
+    (aref object 1))
+
+   ((moped-funcallable-standard-object-instance-p object)
+    (aref (funcallable-instance-data object) 1))
+    ;;(moped-class-of (funcallable-instance-data object)))
+
+   (t
+    (type-of object)))
+  )
 
 (defun moped-slot-value (instance slot-name)
-  (if (eq (object-class instance) (moped-find-class 'standard-class))
-      (let ((index (case slot-name
-		     (name
-		      moped-standard-class-name)
-		     (direct-superclasses
-		      moped-standard-class-direct-superclasses))))
-	(aref instance index))
-    (invoke-generic-function
-     (find-generic-function 'slot-value)
-     slot-name)))
+  (if (eq instance moped-standard-class-metaobject)
+      (moped-slot-value-using-class-standard-class
+       instance (moped-class-of instance) slot-name)
 
-(defun slot-value-using-class (instance class slot-name)
-  "TODO"
-  (error "not implemented yet"))
+    (slot-value-using-class
+     instance (moped-class-of instance) slot-name)))
 
-(defun invoke-generic-function (function &rest args)
-  "Invoke generic function metaobject FUNCTION"
-  (let ((discriminating-function (oref function :discriminating-function)))
-    (apply discriminating-function args)))
+(defun moped-set-slot-value (instance slot-name value)
+  (set-slot-value-using-class
+   instance (moped-class-of instance) slot-name value))
+
+(defun moped-slot-boundp (instance slot-name)
+  (slot-boundp-using-class
+   instance (moped-class-of instance) slot-name))
+
+(defun moped-slot-makunbound (instance slot-name)
+  (slot-makunbound-using-class
+   instance (moped-class-of instance) slot-name))
 
 (provide 'moped/impl)
 ;;; impl.el ends here
