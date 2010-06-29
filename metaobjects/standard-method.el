@@ -37,6 +37,20 @@
 (require 'moped/macros)
 
 
+;;; Metaobject `generic-function'
+;;
+
+(moped-defclass generic-function
+  (metaobject funcallable-standard-object)
+  ()) ;; abstract
+
+
+;;; Metaobject `method'
+;;
+
+(moped-defclass method (metaobject) ()) ;; abstract
+
+
 ;;; Metaobject `standard-method'
 ;;
 
@@ -56,6 +70,18 @@
    (function         :initarg :function
 		     :type    nil
 		     :reader  method-function)))
+
+;; TODO non CLOS temp impl
+(moped-defmethod moped-object-print ((method standard-method) &rest strings)
+  (let ((class            (moped-class-of method))
+	(generic-function (moped-slot-value method :generic-function))
+	(specializers     (moped-slot-value method :specializers)))
+    (format "#<%s %s %s %s %s>"
+	    (symbol-name (moped-slot-value class :name))
+	    (symbol-name (moped-slot-value generic-function :name))
+	    (mapconcat #'symbol-name (moped-slot-value method :qualifiers) " ")
+	    (mapcar (lambda (spec) (symbol-name (moped-slot-value spec :name))) specializers)
+	    (mapconcat #'identity strings " "))))
 
 (provide 'moped/metaobjects/standard-method)
 ;;; standard-method.el ends here
