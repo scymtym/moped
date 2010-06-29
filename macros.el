@@ -81,6 +81,8 @@
 
 (defmacro moped-defgeneric (name args &rest doc-and-options)
   ""
+  (declare (indent 2))
+
   (multiple-value-bind (doc options)
       (moped-macros-parse-defgeneric-doc-and-options doc-and-options)
     `(ensure-generic-function (quote ,name)
@@ -93,6 +95,8 @@
 
 (defmacro moped-defmethod (name &rest qualifiers-args-doc-body)
   ""
+  (declare (indent 2))
+
   ;;
   (unless (symbolp name) ;; (listp name) Names that are lists are not yet supported
     (signal 'wrong-type-argument (list (type-of name)))) ;; TODO invalid method name?
@@ -132,6 +136,8 @@
 
 (defmacro moped-with-slots (specs instance &rest body)
   "TODO"
+  (declare (indent 2))
+
   (let ((instance-var (if (symbolp instance)
 			  instance
 			(make-symbol "instance")))
