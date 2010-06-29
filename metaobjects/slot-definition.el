@@ -26,6 +26,7 @@
 
 ;;; History:
 ;;
+;; 0.1 - Initial version.
 
 
 ;;; Code:
@@ -55,13 +56,59 @@
 		 :reader  slot-definition-initform)
    (initfunction :initarg :initfunction
 		 :type    function
-		 :reader  slot-definition-initfunction)
-   (readers      :initarg :readers
-		 :type    list
-		 :reader  slot-definition-readers)
-   (writers      :initarg :writers
-		 :type    list
-		 :reader  slot-definition-writers))) ;; abstract
+		 :reader  slot-definition-initfunction))) ;; abstract
+
+(moped-defmethod moped-object-print ((slot slot-definition) &rest strings)
+  "Return an unreadable string representation of CLASS."
+  (format "#<%s %s %s %s %s>"
+	  (moped-slot-value (moped-class-of slot) :name)
+	  (moped-slot-value slot :name)
+	  (moped-slot-value slot :type)
+	  (moped-slot-value slot :allocation)
+	  (mapconcat #'indentity strings " ")))
+
+
+;;; Metaobject `direct-slot-definition'
+;;
+
+(moped-defclass direct-slot-definition (slot-definition)
+  ((readers :initarg :readers
+	    :type    list
+	    :reader  slot-definition-readers)
+   (writers :initarg :writers
+	    :type    list
+	    :reader  slot-definition-writers))) ;; abstract
+
+
+;;; Metaobject `effective-slot-definition'
+;;
+
+(moped-defclass effective-slot-definition (slot-definition)
+  ((location :initarg :location
+	     :type    (integer 0)
+	     :reader  slot-definition-location))) ;; abstract
+
+
+;;; Metaobject `standard-slot-definition'
+;;
+
+(moped-defclass standard-slot-definition (slot-definition) ()) ;; abstract
+
+
+;;; Metaobject `standard-direct-slot-definition'
+;;
+
+(moped-defclass standard-direct-slot-definition
+  (standard-slot-definition direct-slot-definition)
+  ())
+
+
+;;; Metaobject `standard-effective-slot-definition'
+;;
+
+(moped-defclass standard-effective-slot-definition
+  (standard-slot-definition effective-slot-definition)
+  ())
 
 (provide 'moped/metaobjects/slot-definition)
 ;;; slot-definition.el ends here
