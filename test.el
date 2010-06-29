@@ -1,4 +1,4 @@
-;;; test.el ---
+;;; test.el --- Utility functions for moped tests
 ;;
 ;; Copyright (C) 2010 Jan Moringen
 ;;
@@ -26,7 +26,7 @@
 
 ;;; History:
 ;;
-;; 0.2 - Changed prefix to moped
+;; 0.2 - Changed prefix to moped.
 ;;
 ;; 0.1 - Initial version.
 
@@ -49,6 +49,7 @@
   ""
   `(progn
      (moped-naming-clear-classes)
+     (moped-naming-clear-generic-functions)
      (moped-bootstrap-object-system)
      ,@forms))
 
