@@ -1,4 +1,4 @@
-;;; class.el ---
+;;; class.el --- Implementation of the class metaobject
 ;;
 ;; Copyright (C) 2010 Jan Moringen
 ;;
@@ -86,17 +86,44 @@
 
 (moped-defmethod finalize-inheritance ((class class))
   ""
-  (moped-set-slot-value class :class-precedence-list (compute-class-precedence-list class))
-  (moped-set-slot-value class :slots (moped-compute-slots class))
-  (moped-set-slot-value class :finalized-p t))
+  (unless (moped-slot-value class :finalized-p)
+    (moped-set-slot-value class :class-precedence-list (compute-class-precedence-list class))
+    ;;(moped-set-slot-value class :slots (compute-slots class))
+    (moped-set-slot-value class :finalized-p t)))
 
 (moped-defmethod compute-class-precedence-list ((class class))
   ""
-  (list class (find-class 'standard-object) t))
+  (list class (moped-find-class 'standard-object) t))
 
 (moped-defmethod compute-slots ((class class))
   ""
-  (error "compute-slots not implemented"))
+  (warn "compute-slots not implemented"))
+
+(moped-defmethod specializer-direct-methods ((specializer class))
+  ""
+  (error "specializer-direct-methods not implemented"))
+
+(moped-defmethod add-direct-method ((specializer class) (method method))
+  ""
+  (error "add-direct-method not implemented"))
+
+(moped-defmethod remove-direct-method ((specializer class) (method method))
+  ""
+  (error "remove-direct-method not implemented"))
+
+(moped-defmethod specializer-direct-generic-functions ((specializer class))
+  (remove-duplicates
+   (mapcar #'method-generic-function
+	   (specializer-direct-methods specializer))))
+
+(moped-defmethod moped-object-print ((class class) &rest strings)
+  "Return an unreadable string representation of CLASS."
+  (format "#<%s %s %s>"
+	  (moped-slot-value (moped-class-of class) :name)
+	  (moped-slot-value class :name)
+	  (if (moped-slot-value class :finalized-p)
+	      "finalized" "NOT finalized")
+	  (mapconcat #'indentity strings " ")))
 
 (provide 'moped/metaobjects/class)
 ;;; class.el ends here
