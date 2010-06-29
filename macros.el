@@ -127,6 +127,41 @@
 (defmacro moped-oref (instance slot-name)
   `(moped-slot-value ,instance (quote ,slot-name)))
 
+(defmacro moped-oset (instance slot-name)
+  `(moped-slot-value ,instance (quote ,slot-name)))
+
+(defmacro moped-with-slots (specs instance &rest body)
+  "TODO"
+  (let ((instance-var (if (symbolp instance)
+			  instance
+			(make-symbol "instance")))
+	(bindings))
+    (dolist (spec specs)
+      (let ((var-name  (if (listp spec) (nth 0 spec) spec))
+	    (slot-name (if (listp spec) (nth 1 spec) spec)))
+	(push
+	 `(,var-name (moped-slot-value ,instance-var (quote ,slot-name)))
+	 bindings)))
+    (if (symbolp instance)
+	`(symbol-macrolet ,bindings
+	   (progn ,@body))
+      `(let ((,instance-var ,instance))
+	 (symbol-macrolet ,bindings
+	   (progn ,@body)))))
+  )
+
+(define-setf-method moped-slot-value (instance slot-name)
+  (let ((instance-temp  (make-symbol "instance"))
+	(slot-name-temp (make-symbol "slot-name"))
+	(store-temp     (make-symbol "store")))
+    `((,instance-temp ,slot-name-temp)
+      (,instance      ,slot-name)
+      (,store-temp)
+      (moped-set-slot-value
+       ,instance-temp ,slot-name-temp ,store-temp)
+      (moped-slot-value ,instance-temp ,slot-name-temp)))
+  )
+
 
 ;;; Utility Functions
 ;;
