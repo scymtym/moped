@@ -97,11 +97,11 @@ corresponding class metaobjects.")
 
 (defun ensure-class-using-class-null (class name direct-superclasses direct-slots options)
   ""
-  (let* ((metaclass-symbol (or (plist-get options :metaclass)
-			       'standard-class))
-	 (metaclass       (moped-find-class metaclass-symbol))) ;; TODO Do this lookup earlier?
+  (let* ((metaclass-name (or (nth 1 (assoc :metaclass options))
+			     'standard-class))
+	 (metaclass      (moped-find-class metaclass-name))) ;; TODO Do this lookup earlier?
     (unless metaclass
-      (signal 'invalid-metaclass (list metaclass-symbol)))
+      (signal 'invalid-metaclass (list metaclass-name)))
 
     (moped-make-instance
      metaclass
@@ -113,9 +113,11 @@ corresponding class metaobjects.")
 ;;; Naming functions for generic function metaobjects
 ;;
 
-(defun find-generic-function (name)
+(defun find-generic-function (name &optional errorp)
   ""
-  (gethash name moped-naming-generic-functions))
+  (or (gethash name moped-naming-generic-functions)
+      (when errorp
+	(signal 'no-such-generic-function (list name)))))
 
 (defun ensure-generic-function (name args doc options)
   ""
@@ -140,11 +142,11 @@ corresponding class metaobjects.")
   generic)
 
 (defun ensure-generic-function-using-class-null (generic name args doc options)
-  (let* ((metaclass-symbol (or (plist-get options :metaclass)
-			       'standard-generic-function))
-	 (metaclass        (moped-find-class metaclass-symbol)))
+  (let* ((metaclass-name (or (nth 1 (assoc :metaclass options))
+			     'standard-generic-function))
+	 (metaclass      (moped-find-class metaclass-name)))
     (unless metaclass
-      (signal 'invalid-metaclass (list metaclass-symbol)))
+      (signal 'invalid-metaclass (list metaclass-name)))
 
     (apply
      #'moped-make-instance
@@ -195,7 +197,6 @@ corresponding class metaobjects.")
   (ensure-method-combination-using-class
    (find-method-combination name)
    name))
-
 
 ;;; Utility functions
 ;;
