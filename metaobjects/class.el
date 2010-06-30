@@ -99,17 +99,17 @@
   ""
   (warn "compute-slots not implemented"))
 
-(moped-defmethod specializer-direct-methods ((specializer class))
+(moped-defmethod specializer-direct-methods ((specializer class)) ;; TODO move into specialzier superclass?
   ""
-  (error "specializer-direct-methods not implemented"))
+  (moped-oref specializer :direct-methods))
 
 (moped-defmethod add-direct-method ((specializer class) (method method))
   ""
-  (error "add-direct-method not implemented"))
+  (push method (moped-oref specializer :direct-methods)))
 
 (moped-defmethod remove-direct-method ((specializer class) (method method))
   ""
-  (error "remove-direct-method not implemented"))
+  (warn "remove-direct-method not implemented"))
 
 (moped-defmethod specializer-direct-generic-functions ((specializer class))
   (remove-duplicates
