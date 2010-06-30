@@ -85,6 +85,36 @@
 (put 'class-not-finalized 'error-message
      "Class is not finalized")
 
+;; no-such-generic-function
+
+(intern "no-such-generic-function")
+
+(put 'no-such-generic-function 'error-conditions
+     '(error no-such-generic-function))
+
+(put 'no-such-generic-function 'error-message
+     "No such generic function")
+
+;; incongruent-lambda-lists
+
+(intern "incongruent-lambda-lists")
+
+(put 'incongruent-lambda-lists 'error-conditions
+     '(error incongruent-lambda-lists))
+
+(put 'incongruent-lambda-lists 'error-message
+     "Lambda lists are incongruent")
+
+;; double-method-association
+
+(intern "double-method-association")
+
+(put 'double-method-association 'error-conditions
+     '(error double-method-association))
+
+(put 'double-method-association 'error-message
+     "Method is already associated to a generic function")
+
 ;; no-applicable-method
 
 (intern "no-applicable-method")
