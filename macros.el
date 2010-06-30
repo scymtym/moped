@@ -24,16 +24,20 @@
 ;;
 ;; This file contains the interface macros
 ;;
-;; + `defclass'
-;; + `defgeneric'
-;; + `defmethod'
-;;
-;; + `oref'
+;; + Defining metaobjects
+;;   + `moped-defclass'
+;;   + `moped-defgeneric'
+;;   + `moped-defmethod'
+;; + Slot access macros
+;;   + `moped-oref'
+;;   + `moped-oset'
+;;   + `moped-with-slots'
+;; + setf methods
 
 
 ;;; History:
 ;;
-;; 0.2 - Changed prefix to moped
+;; 0.2 - Changed prefix to moped.
 ;;
 ;; 0.1 - Initial version.
 
@@ -50,7 +54,10 @@
 
 (defmacro moped-defclass (name direct-superclasses direct-slots
 			  &rest options)
-  ""
+  "Define a class named NAME with given superclasses and slots."
+  (declare (indent 1))
+
+  ;; Check arguments.
   ;; TODO Should the lower layers check this?
   (unless (symbolp name)
     (signal 'wrong-type-argument (list (type-of name))))
@@ -80,7 +87,7 @@
   )
 
 (defmacro moped-defgeneric (name args &rest doc-and-options)
-  ""
+  "Define a generic function NAME with parameters ARGS."
   (declare (indent 2))
 
   (multiple-value-bind (doc options)
@@ -94,10 +101,10 @@
   )
 
 (defmacro moped-defmethod (name &rest qualifiers-args-doc-body)
-  ""
+  "Define a method NAME with given qualifiers, parameters and body."
   (declare (indent 2))
 
-  ;;
+  ;; Check arguments.
   (unless (symbolp name) ;; (listp name) Names that are lists are not yet supported
     (signal 'wrong-type-argument (list (type-of name)))) ;; TODO invalid method name?
 
@@ -129,13 +136,15 @@
 ;;
 
 (defmacro moped-oref (instance slot-name)
+  "Return the value of SLOT-NAME in INSTANCE."
   `(moped-slot-value ,instance (quote ,slot-name)))
 
 (defmacro moped-oset (instance slot-name value)
+  "Set SLOT-NAME to VALUE in INSTANCE."
   `(moped-set-slot-value ,instance (quote ,slot-name) ,value))
 
 (defmacro moped-with-slots (specs instance &rest body)
-  "TODO"
+  "Execute BODY with names bound to slots of INSTANCE."
   (declare (indent 2))
 
   (let ((instance-var (if (symbolp instance)
