@@ -92,6 +92,10 @@
     (type-of object)))
   )
 
+
+;;; Slot Access Functions
+;;
+
 (defun moped-slot-value (instance slot-name)
   (if (eq instance moped-standard-class-metaobject)
       (moped-slot-value-using-class-standard-class
@@ -111,6 +115,14 @@
 (defun moped-slot-makunbound (instance slot-name)
   (slot-makunbound-using-class
    instance (moped-class-of instance) slot-name))
+
+
+;;; Functions Related to Generic Functions
+;;
+
+(defun call-method (function args &rest more-args) ;; TODO macro?
+  ""
+  (apply function args more-args))
 
 (provide 'moped/impl)
 ;;; impl.el ends here
