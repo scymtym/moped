@@ -131,8 +131,8 @@
 (defmacro moped-oref (instance slot-name)
   `(moped-slot-value ,instance (quote ,slot-name)))
 
-(defmacro moped-oset (instance slot-name)
-  `(moped-slot-value ,instance (quote ,slot-name)))
+(defmacro moped-oset (instance slot-name value)
+  `(moped-set-slot-value ,instance (quote ,slot-name) ,value))
 
 (defmacro moped-with-slots (specs instance &rest body)
   "TODO"
