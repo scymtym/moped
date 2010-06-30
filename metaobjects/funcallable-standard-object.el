@@ -42,12 +42,71 @@
 (moped-defclass funcallable-standard-object (standard-object)
   ())
 
+(moped-defmethod moped-initialize-instance ((instance funcallable-standard-object) &rest initargs)
+  ""
+  (apply #'moped-initialize-instance-standard-object
+	 (funcallable-instance-data instance) initargs)
+  instance)
+
+(moped-defmethod slot-value-using-class ((instance funcallable-standard-object)
+					 class slot-name)
+  (moped-slot-value-using-class-standard-object
+   (funcallable-instance-data instance)
+   class
+   slot-name))
+
+(moped-defmethod set-slot-value-using-class ((instance funcallable-standard-object)
+					     class slot-name value)
+  (moped-set-slot-value-using-class-standard-object
+   (funcallable-instance-data instance)
+   class
+   slot-name value))
+
+(moped-defmethod slot-boundp-using-class ((instance funcallable-standard-object)
+					  class slot-name)
+  ""
+  (moped-slot-boundp-using-class-standard-object
+   (funcallable-instance-data instance)
+   class
+   slot-name))
+
+(moped-defmethod slot-makunbound-using-class ((instance funcallable-standard-object)
+					      class slot-name)
+  ""
+  (moped-slot-makunbound-using-class-standard-object
+   (funcallable-instance-data instance)
+   class
+   slot-name))
+
+
+;;;
+;;
+
+(defun moped-make-instance-funcallable-standard-object (class &rest initargs)
+  ""
+  (let ((instance (apply #'moped-allocate-instance-funcallable-standard-object
+			 class initargs)))
+    (apply #'moped-initialize-instance-standard-object
+	   (funcallable-instance-data instance) initargs)
+    instance))
+
+(defun moped-allocate-instance-funcallable-standard-object (class &rest initargs)
+  ""
+  (let ((instance-data (apply #'moped-allocate-instance-standard-object class initargs)))
+    `(lambda (&rest args)
+       (if moped-funcallable-standard-object-always-false
+	   ,instance-data
+	 ,(copy-tree '(apply nil args)))))
+  )
+
 
 ;;; Utility Functions
 ;;
+;; Setf methods for these are defined in ../macros.el
 
 (defvar moped-funcallable-standard-object-always-false nil
-  "")
+  "Note: I think, this has to be a variable (not a constant) to
+keep the byte-compiler from optimizing.")
 
 (defun funcallable-instance-data (funcallable)
   "Return the instance object stored in FUNCALLABLE."
