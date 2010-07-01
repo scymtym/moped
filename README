@@ -1,0 +1,54 @@
+#+TITLE: Moped README
+#+AUTHOR: Jan Moringen
+
+* INTRODUCTION
+
+  MOPED is the *M* eta *O* bject *P* rotocol for *E* macs *P* rograms. Its
+  structure is based on the Meta Object Protocol (MOP) described in
+  [[http://en.wikipedia.org/wiki/The_Art_of_the_Metaobject_Protocol][The Art of the Metaobject Protocol]] (AMOP) by Gregor Kiozales, Jim
+  des Rivières and Daniel G. Bobrow. MOPED simultaneously implements
+  large amounts of the [[http://en.wikipedia.org/wiki/CLOS][Common Lisp Object System]] (CLOS).
+
+
+* ORGANIZATION
+  #+begin_ditaa blue.png -r
+  +--------------------------------+
+  | cFF8                           |
+  |     Interface Macros           |------>macros.el
+  |                                |
+  +--------------------------------+
+  | cF8F                           |
+  |            Naming              |------>naming.el
+  |                                |
+  +----------------+---------------+
+  | c8FF           | c88F          |
+  | Infrastructure | Metaobjects   |------>metaobjects/
+  |                |               |
+  +----------------+---------------+
+  #+end_ditaa
+
+
+* KNOWN ISSUES
+
+
+* LICENSE
+
+  This file is part of Rudel.
+
+  Rudel is free software: you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Rudel is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+  License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Rudel.  If not, see <http://www.gnu.org/licenses/>.
+
+
+;; Local Variables:
+;; mode: org
+;; End:
