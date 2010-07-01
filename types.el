@@ -59,7 +59,7 @@
   ""
   `(lambda (query)
      (and (moped-object-p query)
-	  (memq (moped-naming-maybe-find-class (quote ,class))
+	  (memq (moped-naming-maybe-find-class ,class)
 		(moped-class-precedence-list
 		 (moped-class-of query))))))
 
