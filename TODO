@@ -1,0 +1,367 @@
+* TODO Help System Integration [0/3]
+  + [-] describe-class
+    + [X] Definition :: [[file:./help.el::defun moped-describe-class][moped-describe-class]]
+    + [ ] Test ::
+  + [-] describe-generic-function
+    + [X] Definition :: [[file:./help.el::defun moped-describe-generic-function][moped-describe-generic-function]]
+    + [ ] Test ::
+  + [-] describe-method
+    + [X] Definition :: [[file:./help.el::defun moped-describe-method][moped-describe-method]]
+    + [ ] Test ::
+
+* Metaobjects [0%]
+  + [ ] standard-object
+    + [ ] Definition ::
+  + [ ] funcallable-standard-object
+    + [ ] Definition ::
+  + [ ] metaobject
+    + [ ] Definition ::
+  + [ ] generic-function
+    + [ ] Definition ::
+  + [ ] standard-generic-function
+    + [ ] Definition ::
+  + [ ] method
+    + [ ] Definition ::
+  + [ ] standard-method
+    + [ ] Definition ::
+  + [ ] standard-accessor-method
+    + [ ] Definition ::
+  + [ ] standard-reader-method
+    + [ ] Definition ::
+  + [ ] standard-writer-method
+    + [ ] Definition ::
+  + [ ] method-combination
+    + [ ] Definition ::
+  + [ ] slot-definition
+    + [ ] Definition :: [[file:./metaobjects/slot-definition.el::defclass slot-definition][slot-definition]]
+  + [ ] direct-slot-definition
+    + [ ] Definition ::
+  + [ ] effective-slot-definition
+    + [ ] Definition ::
+  + [ ] standard-slot-definition
+    + [ ] Definition ::
+  + [ ] standard-direct-slot-definition
+    + [ ] Definition ::
+  + [ ] standard-effective-slot-definition
+    + [ ] Definition ::
+  + [ ] specializer
+    + [ ] Definition ::
+  + [ ] eql-specializer
+    + [ ] Definition ::
+  + [ ] class
+    + [ ] Definition ::
+  + [ ] built-in-class
+    + [ ] Definition ::
+  + [ ] forward-referenced-class
+    + [ ] Definition ::
+  + [ ] standard-class
+    + [ ] Definition ::
+  + [ ] funcallable-standard-class
+    + [ ] Definition ::
+* Function and Method Dictionary [0%]
+  + [ ] Generic Function add-dependent
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function add-direct-method
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function add-direct-subclass
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function add-method
+    + [ ] standard-generic-function ::
+      + [ ] Definition :: [[./metaobjects/standard-generic-function.el::defmethod add-method][add-method]]
+      + [ ] Test ::
+  + [ ] Generic Function allocate-instance
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function class-...
+    + [-] class-default-initargs
+      + class
+	+ [X] Definition :: [[file:./metaobjects/class.el::reader class-default-initargs][class-default-initargs]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-direct-default-initargs
+      + class
+	+ [X] Definition :: [[file:./metaobjects/class.el::reader class-direct-default-initargs][class-direct-default-initargs]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-direct-slots
+      + class
+	+ [X] Definition ::[[file:./metaobjects/class.el::reader class-direct-slots][class-direct-slots]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-direct-subclasses
+      + class
+	+ [X] Definition ::[[file:./metaobjects/class.el::reader class-direct-subclasses][class-direct-subclasses]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-direct-superclasses
+      + class
+	+ [X] Definition :: [[file:./metaobjects/class.el::reader class-direct-superclasses][class-direct-superclasses]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-finalized-p
+      + class
+	+ [X] Definition ::[[file:./metaobjects/class.el::reader class-finalized-p][class-finalized-p]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-name
+      + class
+	+ [X] Definition ::[[file:./metaobjects/class.el::reader class-name][class-name]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-precedence-list
+      + class
+	+ [X] Definition ::[[file:./metaobjects/class.el::reader class-precedence-list][class-precedence-list]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [ ] class-prototype
+      + class
+	+ [ ] Definition ::[[file:./metaobjects/class.el::reader class-prototype][class-prototype]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+    + [-] class-slots
+      + class
+	+ [X] Definition ::[[file:./metaobjects/class.el::reader class-slots][class-slots]]
+	+ [ ] Test ::
+      + forward-referenced-class
+        + [ ] Definition ::
+        + [ ] Test ::
+  + [ ] Generic Function compute-applicable-methods
+    + [ ] standard-generic-function ::
+      + [ ] Definition :: [[file:./metaobjects/standard-generic-function.el::compute-applicable-methods][compute-applicable-methods]]
+      + [ ] Test ::
+  + [ ] Generic Function compute-applicable-methods-using-classes
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function compute-class-precedence-list
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function compute-default-initargs
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function compute-discriminating-function
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function compute-effective-method
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function compute-effective-slot-definition
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function compute-slots
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function direct-slot-definition-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function effective-slot-definition-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Function ensure-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function ensure-class-using-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Function ensure-generic-function
+    + [ ] Definition :: [[file:./naming.el::defun ensure-generic-function][ensure-generic-function]]
+    + [ ] Test :: [[file:./naming.el::deftest moped-naming-test-ensure-generic-function][moped-naming-test-ensure-generic-function]]
+  + [ ] Generic Function ensure-generic-function-using-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Function eql-specializer-object
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Function extract-lambda-list
+    + [ ] Definition :: similar [[file:./macros::defun moped-macros-remove-specializer][moped-macros-remove-specializer]]
+    + [ ] Test ::
+  + [ ] Function extract-specializer-names
+    + [ ] Definition :: similar [[file:./macros.el::defun moped-macros-extract-specializer][moped-macros-extract-specializer]]
+    + [ ] Test ::
+  + [ ] Generic Function finalize-inheritance
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function find-method-combination
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Function funcallable-standard-instance-access
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function generic-function-...
+    + [-] generic-function-argument-precedence-order
+      + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::reader generic-function-argument-precedence-order][generic-function-argument-precedence-order]]
+      + [ ] Test ::
+    + [-] generic-function-declarations
+      + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::reader generic-function-declarations][generic-function-declarations]]
+      + [ ] Test ::
+    + [-] generic-function-lambda-list
+      + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::reader generic-function-lambda-list][generic-function-lambda-list]]
+      + [ ] Test ::
+    + [-] generic-function-method-class
+      + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::reader generic-function-method-class][generic-function-method-class]]
+      + [ ] Test ::
+    + [-] generic-function-method-combination
+      + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::reader generic-function-method-combination][generic-nfunction-method-combination]]
+      + [ ] Test ::
+    + [-] generic-function-methods
+      + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::reader generic-function-methods][generic-function-methods]]
+      + [ ] Test ::
+    + [-] generic-function-name
+      + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::reader generic-function-name][generic-function-name]]
+      + [ ] Test ::
+  + [ ] Initialization of Class Metaobjects
+  + [ ] Initialization of Generic Function Metaobjects
+  + [ ] Initialization of Method Metaobjects
+  + [ ] Initialization of Slot Definition Metaobjects
+  + [ ] Function intern-eql-specializer
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function make-instance
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function make-method-lambda
+    + [ ] Definition :: [[./metaobjects/standard-generic-function.el::defmethod make-method-lambda][make-method-lambda]]
+    + [ ] Test ::
+  + [ ] Generic Function map-dependents
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function method-...
+    + [-] method-function
+      + [X] Definition :: [[file:./metaobjects/standard-method.el::reader method-function][method-function]]
+      + [ ] Test ::
+    + [-] method-generic-function
+      + [X] Definition :: [[file:./metaobjects/standard-method.el::reader method-generic-function][method-generic-function]]
+      + [ ] Test ::
+    + [-] method-lambda-list
+      + [X] Definition :: [[file:./metaobjects/standard-method.el::reader method-lambda-list][method-lambda-list]]
+      + [ ] Test ::
+    + [-] method-specializers
+      + [X] Definition :: [[file:./metaobjects/standard-method.el::reader method-specializers][method-specializers]]
+      + [ ] Test ::
+    + [-] method-qualifiers
+      + [X] Definition :: [[file:./metaobjects/standard-method.el::reader method-qualifiers][method-qualifiers]]
+      + [ ] Test ::
+    + [ ] accessor-method-slot-definition
+      + [ ] Definition ::
+      + [ ] Test ::
+  + [ ] Readers for Class Metaobjects
+  + [ ] Readers for Generic Function Metaobjects
+  + [ ] Readers for Method Metaobjects
+  + [ ] Readers for Slot Definition Metaobjects
+  + [ ] Generic Function reader-method-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function remove-dependent
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function remove-direct-method
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function remove-direct-subclass
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function remove-method
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [-] Function set-funcallable-instance-function
+    + [X] Definition :: [[file:./metaobjects/funcallable-standard-object.el::defun set-funcallable-instance-function][set-funcallable-instance-function]]
+    + [ ] Test ::
+  + [ ] Function (setf class-name)
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Function (setf generic-function-name)
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function (setf slot-value-using-class)
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function slot-boundp-using-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function slot-definition-...
+    + [-] slot-definition-allocation
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-allocation][slot-definition-allocation]]
+      + [ ] Test ::
+    + [-] slot-definition-initargs
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-initargs][slot-definition-initargs]]
+      + [ ] Test ::
+    + [-] slot-definition-initform
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-initform][slot-definition-initform]]
+      + [ ] Test ::
+    + [-] slot-definition-initfunction
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-initfunction][slot-definition-initfunction]]
+      + [ ] Test ::
+    + [ ] slot-definition-location
+      + [ ] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-location][slot-definition-location]]
+      + [ ] Test ::
+    + [-] slot-definition-name
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-name][slot-definition-name]]
+      + [ ] Test ::
+    + [-] slot-definition-readers
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-readers][slot-definition-readers]]
+      + [ ] Test ::
+    + [-] slot-definition-writers
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-writers][slot-definition-writers]]
+      + [ ] Test ::
+    + [-] slot-definition-type
+      + [X] Definition :: [[file:./metaobjects/slot-definition.el::reader slot-definition-type][slot-definition-type]]
+      + [ ] Test ::
+  + [ ] Generic Function slot-makunbound-using-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function slot-value-using-class
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function specializer-direct-generic-functions
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function specializer-direct-methods
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Function standard-instance-access
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function update-dependent
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function validate-superclass
+    + [ ] Definition ::
+    + [ ] Test ::
+  + [ ] Generic Function writer-method-class
+    + [ ] Definition ::
+    + [ ] Test ::
+
+* Extensions [0/3]
+  + [-] Generic Function no-applicable-method
+    + [X] Definition :: [[file:./metaobjects/free-generic-functions.el::moped-defgeneric moped-no-applicable-method][no-applicable-method]]
+    + [ ] Test ::
+  + [-] Generic Function slot-missing
+    + [X] Definition :: [[file:./metaobjects/free-generic-functions.el::moped-defgeneric moped-slot-missing][slot-missing]]
+    + [ ] Test ::
+  + [-] Generic Function slot-unbound
+    + [X] Definition :: [[file:./metaobjects/free-generic-functions.el::moped-defgeneric moped-slot-unbound][slot-unbound]]
+    + [ ] Test ::
+
+;; Local Variables:
+;; mode: org
+;; End:
