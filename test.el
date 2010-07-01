@@ -58,9 +58,7 @@
   `(let ((moped-naming-classes
 	  (copy-hash-table moped-naming-classes))
 	 (moped-naming-generic-functions
-	  (copy-hash-table moped-naming-generic-functions))
-	 (moped-naming-methods
-	  (copy-hash-table moped-naming-methods)))
+	  (copy-hash-table moped-naming-generic-functions)))
      ,@forms))
 
 (provide 'moped/test)
