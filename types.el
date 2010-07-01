@@ -25,9 +25,16 @@
 ;; This file contains the implementation of the interaction with the
 ;; common lisp type system. This is required for determining
 ;; applicable methods based on the types of the actual arguments.
+;;
+;; Types tests for the following cases are implemented
+;;
+;; + instance of class
+;; + eql identity
 
 
 ;;; History:
+;;
+;; 0.2 - Added unit test for instance type test
 ;;
 ;; 0.1 - Initial version.
 
@@ -37,6 +44,9 @@
 
 (eval-when-compile
   (require 'cl))
+
+(require 'moped/impl) ;; for `moped-object-p', `moped-class-of'
+(require 'moped/naming)
 
 
 ;;; Classes as Types
@@ -87,4 +97,39 @@
      'cl-deftype-handler #'moped-types-eql-handler)
 
 (provide 'moped/types)
+
+
+;;; Unit Tests
+;;
+
+(eval-when-compile
+  (when (require 'ert nil t)
+
+    (ert-deftest moped-types-test-make-instance-test ()
+      "Test `moped-types-make-instance-test' function."
+      (should
+       (equal
+	(cl-make-type-test
+	 'bla '(class . ((quote standard-object))))
+
+	'((lambda (query)
+	    (and (moped-object-p query)
+		 (memq
+		  (moped-naming-maybe-find-class
+		   (quote standard-object))
+		  (moped-class-precedence-list
+		   (moped-class-of query)))))
+	  bla)))
+      )
+
+    (ert-deftest moped-types-test-typep-for-instance ()
+      "Test `moped-types-make-instance-test' function."
+      (should
+       (typep
+	(moped-make-instance 'standard-method)
+	'(class . ((quote standard-method)))))
+      )
+
+    ))
+
 ;;; types.el ends here
