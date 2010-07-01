@@ -226,4 +226,99 @@ corresponding class metaobjects.")
 		       :name name)) ;; TODO
 
 (provide 'moped/naming)
+
+;;; Unit Tests
+;;
+
+(eval-when-compile
+  (when (require 'ert nil t)
+
+    (require 'moped/test)
+
+    (ert-deftest moped-naming-test-ensure-class ()
+      "Test `ensure-class' function."
+      ;; New class, no superclasses, no slots, no options
+      (without-object-system-modification
+       (let ((test-class
+	      (ensure-class 'test-class '() '() '())))
+	 (should (eq (moped-oref test-class :name) 'test-class))
+	 (should (moped-object-p test-class))
+	 (should (eq (moped-class-of test-class)
+		     (moped-find-class 'standard-class)))
+	 (should (typep test-class '(class . ((quote standard-class)))))))
+
+      ;; Use a different metaclass
+      (without-object-system-modification
+       (let ((test-class
+	      (ensure-class 'test-class '() '() '
+			    ((:metaclass funcallable-standard-class)))))
+	 (should (eq (moped-oref test-class :name) 'test-class))
+	 (should (moped-object-p test-class))
+	 (should (typep test-class '(class . ((quote funcallable-standard-class)))))))
+      )
+
+    (ert-deftest moped-naming-test-moped-find-class ()
+      "Test `moped-find-class' function'."
+      ;; Test signaling of errors
+      (should (null (moped-find-class 'non-existing-class)))
+
+      (should-error
+       (moped-find-class 'non-existing-class t)
+       :type 'no-such-class)
+
+      ;; Test finding existing class
+      (without-object-system-modification
+       (let ((test-class
+	      (moped-defclass test-class () ())))
+
+	 (should (eq (moped-find-class 'test-class)
+		     test-class))))
+      )
+
+    (ert-deftest moped-naming-test-ensure-generic-function ()
+      "Test `ensure-generic-function' function."
+      ;; Smoke test. No arguments, no documentation.
+      (without-object-system-modification
+       (let ((test-generic
+	      (ensure-generic-function 'test-generic '() "" '())))
+
+	 (should (eq test-generic
+		     (find-generic-function 'test-generic)))))
+      )
+
+    (ert-deftest moped-naming-test-find-generic-function ()
+      "Test `find-generic-function' function."
+      ;; Test signaling of errors
+      (find-generic-function 'non-existing-generic)
+
+      (should-error
+       (find-generic-function 'non-existing-generic t)
+       :type 'no-such-generic-function)
+
+      ;; Test finding existing generic functions.
+      (without-object-system-modification
+       (let ((test-generic
+	      (moped-defgeneric test-generic () )))
+
+	 (should (eq (find-generic-function 'test-generic)
+		     test-generic))))
+      )
+
+    (ert-deftest moped-naming-test-ensure-method ()
+      "Test `ensure-method' function."
+      ;; Smoke test.
+      (without-object-system-modification
+       (let ((test-method
+	      (ensure-method 'test-method '() '() '() "" nil)))
+
+	 (should
+	  (eq test-method
+	      (first
+	       (moped-oref
+		(find-generic-function 'test-method)
+		:methods))))))
+      )
+
+    ))
+
 ;;; naming.el ends here
