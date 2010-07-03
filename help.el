@@ -60,7 +60,11 @@
 
       (moped-with-slots (name class-precedence-list finalized-p slots documentation) class
 	;; Summary
-	(princ (format "%s is a class in %s.\n" name "TODO"))
+	(princ name)
+	(princ " is a class in `")
+	(moped-help-print-file name (symbol-file name 'moped-defclass))
+	(princ "'.")
+	(princ "\n")
 	(moped-help-print-metaclass class)
 	(princ "\n\n")
 
@@ -88,7 +92,7 @@
 	     (symbol-name (aref slot 9))
 	     'help-moped-method)
 	    (insert "\n")))
-	(insert "\n")
+	(princ "\n")
 
 	;; Inspect link
 	(moped-help-print-inspect-button class "class" name)
@@ -113,7 +117,10 @@
     (with-help-window (help-buffer)
       (moped-with-slots (name lambda-list methods documentation) generic-function
 	;; Summary
-	(princ (format "%s is a generic function in %s.\n" name "TODO"))
+	(princ (format "%s is a generic function in `" name))
+	(moped-help-print-file name (symbol-file name 'moped-defgeneric))
+	(princ "'.")
+	(princ "\n")
 	(moped-help-print-metaclass generic-function)
 	(princ "\n\n")
 
@@ -172,10 +179,12 @@
 		      (process-args lambda-list specializers))))
 
 	  ;; Summary
-	  (princ (format "%s %s is a method in %s\n"
+	  (princ (format "%s %s is a method in `"
 			 name
-			 (mapconcat #'symbol-name qualifiers " ")
-			 "TODO"))
+			 (mapconcat #'symbol-name qualifiers " ")))
+	  (moped-help-print-file name (symbol-file name 'moped-defmethod))
+	  (princ "'.")
+	  (princ "\n")
 	  (moped-help-print-metaclass method)
 	  (princ "\n")
 	  (princ "It is defined on the generic function ")
@@ -224,6 +233,13 @@
    objects
    (or separator " "))
   )
+
+(defun moped-help-print-file (object filename)
+  ""
+  (with-current-buffer standard-output
+    (help-insert-xref-button
+     (file-name-nondirectory filename)
+     'help-function-def object filename)))
 
 (defun moped-help-print-metaclass (metaobject)
   ""
