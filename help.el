@@ -216,6 +216,60 @@
   )
 
 
+;;; Advice `describe-function' to use `moped-describe-generic-function'
+;;
+
+(defadvice describe-function (around moped activate)
+  "Call `moped-describe-generic-function' when encountering a generic function."
+  (let ((function (ad-get-arg 0)))
+    (if (typep (symbol-function function)
+	       '(class . ((quote generic-function)))) ;; TODO better test?
+	(moped-describe-generic-function function)
+      ad-do-it)))
+
+
+;;; User Input Functions
+;;
+
+(defvar moped-read-class-history nil
+  "")
+
+(defvar moped-read-generic-function-history nil
+  "")
+
+(defun moped-read-generic-thing (table prompt history &optional objectp)
+  ""
+  (let ((generic-objects))
+    (maphash
+     (lambda (symbol function)
+       (push (symbol-name symbol) generic-objects))
+     table)
+    (let ((name (completing-read prompt generic-objects
+				 nil nil nil history)))
+      (if objectp
+	  (gethash (intern-soft name) table)
+	name)))
+  )
+
+(defun moped-read-class (prompt &optional objectp)
+  ""
+  (moped-read-generic-thing
+   moped-naming-classes prompt
+   'moped-read-class-history objectp))
+
+(defun moped-read-generic-function (prompt &optional objectp)
+  ""
+  (moped-read-generic-thing
+   moped-naming-generic-functions prompt
+   'moped-read-generic-function-history objectp))
+
+(defun moped-read-method (prompt methods &optional objectp)
+  ""
+  (let* ((names (mapcar #'moped-help-method-string methods))
+	 (name  (completing-read prompt names)))
+    (find name methods :key #'moped-help-method-string :test #'string=)))
+
+
 ;;; Utility functions
 ;;
 
@@ -293,48 +347,6 @@
       specializers
       " ")
      ")")))
-
-
-;;; User Input Functions
-;;
-
-(defvar moped-read-class-history nil
-  "")
-
-(defvar moped-read-generic-function-history nil
-  "")
-
-(defun moped-read-generic-thing (table prompt history &optional objectp)
-  ""
-  (let ((generic-objects))
-    (maphash
-     (lambda (symbol function)
-       (push (symbol-name symbol) generic-objects))
-     table)
-    (let ((name (completing-read prompt generic-objects
-				 nil nil nil history)))
-      (if objectp
-	  (gethash (intern-soft name) table)
-	name)))
-  )
-
-(defun moped-read-class (prompt &optional objectp)
-  ""
-  (moped-read-generic-thing
-   moped-naming-classes prompt
-   'moped-read-class-history objectp))
-
-(defun moped-read-generic-function (prompt &optional objectp)
-  ""
-  (moped-read-generic-thing
-   moped-naming-generic-functions prompt
-   'moped-read-generic-function-history objectp))
-
-(defun moped-read-method (prompt methods &optional objectp)
-  ""
-  (let* ((names (mapcar #'moped-help-method-string methods))
-	 (name  (completing-read prompt names)))
-    (find name methods :key #'moped-help-method-string :test #'string=)))
 
 
 ;;; Register functions for help cross referencing
