@@ -215,11 +215,6 @@
 	  ))))
   )
 
-(defun moped-format-arg (arg)
-  ""
-  (propertize (upcase (symbol-name arg)) 'face 'italic)
-  )
-
 
 ;;; Utility functions
 ;;
