@@ -9,22 +9,75 @@
   des Rivières and Daniel G. Bobrow. MOPED simultaneously implements
   large amounts of the [[http://en.wikipedia.org/wiki/CLOS][Common Lisp Object System]] (CLOS).
 
+** MOTIVATION
+   Since version 23.? GNU Emacs has an integrated object system,
+   called EIEIO, that implements a substantial amount of the
+   frequently used parts of CLOS.
+
+   However, EIEIO implements only a subset of CLOS and in particular
+   lacks the following features:
+   + Unevaluated Initforms :: From section 3.2 Slot Options of the
+	EIEIO manual:
+	#+BEGIN_QUOTE
+	The value passed to initform is automatically quoted.
+	#+END_QUOTE
+
+	The difference is illustrated by the following example:
+	#+BEGIN_SRC emacs-lisp
+        (defclass bla ()
+          ((bla :initform (+ 1 2))))
+	#+END_SRC
+	In EIEIO the value of the slot =bla= will be =(quote (+ 1 2))=
+	after an instance has been initialized.
+   + Metaclasses :: From section 3.3 Class Options of the EIEIO
+	manual:
+	#+BEGIN_QUOTE
+	=:metaclass=
+
+	Unsupported CLOS option.  Enables the use of a different base
+	class other than `standard-class'.
+	#+END_QUOTE
+   + Default Initargs :: From section 3.3 Class Options of the EIEIO
+	manual:
+	#+BEGIN_QUOTE
+	=:default-initargs=
+
+	Unsupported CLOS option.  Specifies a list of initargs to be
+	used when creating new objects.  As far as I can tell, this
+	duplicates the function of `:initform'.
+	#+END_QUOTE
+   + Generic Function Dispatch :: From section 6.1 Generics
+	#+BEGIN_QUOTE
+	In CLOS a generic call also be used to provide an argument
+	list, and dispatch precedence for all the arguments.  In
+	EIEIO, dispatching only occurs for the first argument, so the
+	ARGLIST is not used.
+	#+END_QUOTE
+   + Method Qualifiers :: From section 6.2 Methods
+	#+BEGIN_QUOTE
+	1. There is currently no =:around= tag.
+
+	2. CLOS allows multiple sets of type-cast arguments, where
+	   EIEIO only allows the first argument to be cast.
+	#+END_QUOTE
+   + Dispatch on Symbols, etc ::
+   + Forward Reference Classes ::
 
 * ORGANIZATION
-  #+begin_ditaa blue.png -r
-  +--------------------------------+
-  | cFF8                           |
-  |     Interface Macros           |------>macros.el
-  |                                |
-  +--------------------------------+
-  | cF8F                           |
-  |            Naming              |------>naming.el
-  |                                |
-  +----------------+---------------+
-  | c8FF           | c88F          |
-  | Infrastructure | Metaobjects   |------>metaobjects/
-  |                |               |
-  +----------------+---------------+
+  #+begin_ditaa organization.png -r
+  +-------------------------------------+
+  | c88F                                |
+  |          Interface Macros           |------>macros.el
+  |                                     |
+  +-------------------------------------+
+  | cCCF                                |
+  |               Naming                |------>naming.el
+  |                                     |
+  +----------------+--------------------+
+  | cCCC           |        cCCC        |
+  | Infrastructure +---+    Metaobjects |------>metaobjects/
+  |                    |                |
+  +--------------------+----------------+
   #+end_ditaa
 
 
@@ -32,23 +85,21 @@
 
 
 * LICENSE
+  This file is part of Moped.
 
-  This file is part of Rudel.
-
-  Rudel is free software: you can redistribute it and/or modify it
+  Moped is free software: you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Rudel is distributed in the hope that it will be useful, but WITHOUT
+  Moped is distributed in the hope that it will be useful, but WITHOUT
   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
   License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with Rudel.  If not, see <http://www.gnu.org/licenses/>.
+  along with Moped.  If not, see <http://www.gnu.org/licenses/>.
 
-
-;; Local Variables:
-;; mode: org
-;; End:
+# Local Variables:
+# mode: org
+# End:
