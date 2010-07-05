@@ -1,63 +1,76 @@
-* TODO Help System Integration [0/3]
-  + [-] describe-class
-    + [X] Definition :: [[file:./help.el::defun moped-describe-class][moped-describe-class]]
-    + [ ] Test ::
-  + [-] describe-generic-function
-    + [X] Definition :: [[file:./help.el::defun moped-describe-generic-function][moped-describe-generic-function]]
-    + [ ] Test ::
-  + [-] describe-method
-    + [X] Definition :: [[file:./help.el::defun moped-describe-method][moped-describe-method]]
-    + [ ] Test ::
-
 * Metaobjects [0%]
-  + [ ] standard-object
-    + [ ] Definition ::
-  + [ ] funcallable-standard-object
-    + [ ] Definition ::
-  + [ ] metaobject
-    + [ ] Definition ::
-  + [ ] generic-function
-    + [ ] Definition ::
-  + [ ] standard-generic-function
-    + [ ] Definition ::
-  + [ ] method
-    + [ ] Definition ::
+  + [-] standard-object
+    + [X] Definition :: [[file:./metaobjects/standard-object.el::moped-defclass standard-object][standard-object]]
+    + [ ] Test ::
+  + [-] funcallable-standard-object
+    + [X] Definition :: [[file:./metaobjects/funcallable-standard-object.el::moped-defclass funcallable-standard-object][funcallable-standard-object]]
+    + [ ] Test ::
+  + [-] metaobject
+    + [X] Definition :: [[file:./metaobjects/standard-object.el::moped-defclass metaobject][metaobject]]
+    + [ ] Test ::
+  + [-] generic-function
+    + [X] Definition :: [[file:./metaobjects/standard-method.el::moped-defclass generic-function][generic-function]]
+    + [ ] Test ::
+  + [-] standard-generic-function
+    + [X] Definition :: [[file:./metaobjects/standard-generic-function.el::moped-defclass standard-generic-function][standard-generic-function]]
+    + [ ] Test ::
+  + [-] method
+    + [X] Definition :: [[file:./metaobjects/standard-method.el::moped-defclass method][method]]
+    + [ ] Test ::
   + [ ] standard-method
-    + [ ] Definition ::
+    + [ ] Definition ::[[file:./metaobjects/standard-method.el::moped-defclass standard-method][standard-method]]
+    + [ ] Test ::
   + [ ] standard-accessor-method
     + [ ] Definition ::
+    + [ ] Test ::
   + [ ] standard-reader-method
     + [ ] Definition ::
+    + [ ] Test ::
   + [ ] standard-writer-method
     + [ ] Definition ::
+    + [ ] Test ::
   + [ ] method-combination
     + [ ] Definition ::
-  + [ ] slot-definition
-    + [ ] Definition :: [[file:./metaobjects/slot-definition.el::defclass slot-definition][slot-definition]]
-  + [ ] direct-slot-definition
-    + [ ] Definition ::
-  + [ ] effective-slot-definition
-    + [ ] Definition ::
-  + [ ] standard-slot-definition
-    + [ ] Definition ::
-  + [ ] standard-direct-slot-definition
-    + [ ] Definition ::
+    + [ ] Test ::
+  + [-] slot-definition
+    + [X] Definition :: [[file:./metaobjects/slot-definition.el::moped-defclass slot-definition][slot-definition]]
+    + [ ] Test ::
+  + [-] direct-slot-definition
+    + [X] Definition ::[[file:./metaobjects/slot-definition.el::moped-defclass direct-slot-definition][direct-slot-definition]]
+    + [ ] Test ::
+  + [-] effective-slot-definition
+    + [X] Definition ::[[file:./metaobjects/slot-definition.el::moped-defclass effective-slot-definition][effective-slot-definition]]
+    + [ ] Test ::
+  + [-] standard-slot-definition
+    + [X] Definition ::[[file:./metaobjects/slot-definition.el::moped-defclass standard-slot-definition][standard-slot-definition]]
+    + [ ] Test ::
+  + [-] standard-direct-slot-definition
+    + [X] Definition ::[[file:./metaobjects/slot-definition.el::moped-defclass standard-direct-slot-definition][standard-direct-slot-definition]]
+    + [ ] Test ::
   + [ ] standard-effective-slot-definition
-    + [ ] Definition ::
-  + [ ] specializer
-    + [ ] Definition ::
-  + [ ] eql-specializer
-    + [ ] Definition ::
-  + [ ] class
-    + [ ] Definition ::
+    + [ ] Definition ::[[file:./metaobjects/slot-definition.el::moped-defclass standard-effective-slot-definition][standard-effective-slot-definition]]
+    + [ ] Test ::
+  + [-] specializer
+    + [X] Definition ::[[file:./metaobjects/specializer.el::moped-defclass specializer][specializer]]
+    + [ ] Test ::
+  + [-] eql-specializer
+    + [X] Definition ::[[file:./metaobjects/specializer.el::moped-defclass eql-specializer][eql-specializer]]
+    + [ ] Test ::
+  + [-] class
+    + [X] Definition ::[[file:./metaobjects/class.el::moped-defclass class][class]]
+    + [ ] Test ::
   + [ ] built-in-class
-    + [ ] Definition ::
-  + [ ] forward-referenced-class
-    + [ ] Definition ::
+    + [ ] Definition ::[[file:./metaobjects/builtin.el::moped-defclass built-in-class][built-in-class]]
+    + [ ] Test ::
+  + [-] forward-referenced-class
+    + [X] Definition ::[[file:./metaobjects/forward-referenced-class.el::moped-defclass forward-referenced-class][forward-referenced-class]]
+    + [ ] Test ::
   + [ ] standard-class
-    + [ ] Definition ::
-  + [ ] funcallable-standard-class
-    + [ ] Definition ::
+    + [ ] Definition ::[[file:./metaobjects/standard-class.el::moped-defclass standard-class][standard-class]]
+    + [ ] Test ::
+  + [-] funcallable-standard-class
+    + [X] Definition ::[[file:./metaobjects/funcallable-standard-class.el::moped-defclass funcallable-standard-class][funcallable-standard-class]]
+    + [ ] Test ::
 * Function and Method Dictionary [0%]
   + [ ] Generic Function add-dependent
     + [ ] Definition ::
@@ -360,6 +373,16 @@
     + [ ] Test ::
   + [-] Generic Function slot-unbound
     + [X] Definition :: [[file:./metaobjects/free-generic-functions.el::moped-defgeneric moped-slot-unbound][slot-unbound]]
+    + [ ] Test ::
+* TODO Help System Integration [0/3]
+  + [-] describe-class
+    + [X] Definition :: [[file:./help.el::defun moped-describe-class][moped-describe-class]]
+    + [ ] Test ::
+  + [-] describe-generic-function
+    + [X] Definition :: [[file:./help.el::defun moped-describe-generic-function][moped-describe-generic-function]]
+    + [ ] Test ::
+  + [-] describe-method
+    + [X] Definition :: [[file:./help.el::defun moped-describe-method][moped-describe-method]]
     + [ ] Test ::
 
 # Local Variables:
