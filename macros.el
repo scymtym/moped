@@ -57,7 +57,7 @@
 (defmacro moped-defclass (name direct-superclasses direct-slots
 			  &rest options)
   "Define a class named NAME with given superclasses and slots."
-  (declare (indent 1))
+  (declare (indent 2))
 
   ;; Check arguments.
   ;; TODO Should the lower layers check this?
@@ -95,7 +95,15 @@
 
 (defmacro moped-defgeneric (name args &rest doc-and-options)
   "Define a generic function NAME with parameters ARGS."
-  (declare (indent 2))
+  (declare (indent     2)
+	   (doc-string 3))
+
+  ;; Check arguments
+  (unless (symbolp name)
+    (signal 'wrong-type-argument (list (type-of name))))
+  (unless (and (listp args)
+	       (every #'symbolp args))
+    (signal 'wrong-type-argument (list (type-of args))))
 
   (multiple-value-bind (doc options)
       (moped-macros-parse-defgeneric-doc-and-options doc-and-options)
@@ -114,7 +122,12 @@
 
 (defmacro moped-defmethod (name &rest qualifiers-args-doc-body)
   "Define a method NAME with given qualifiers, parameters and body."
-  (declare (indent 2))
+  (declare (indent     2)
+	   (doc-string 3)
+	   (debug      (&define
+			name [ &optional symbolp ] list ;; name, qualifiers, args
+			[ &optional stringp ]           ;; docstring
+			def-body)))
 
   ;; Check arguments.
   (unless (symbolp name) ;; (listp name) Names that are lists are not yet supported
@@ -162,7 +175,8 @@
 
 (defmacro moped-with-slots (specs instance &rest body)
   "Execute BODY with names bound to slots of INSTANCE."
-  (declare (indent 2))
+  (declare (indent 2)
+	   (debug  (list list def-body))) ;; TODO second should be something like object
 
   (let ((instance-var (if (symbolp instance)
 			  instance
