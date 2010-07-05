@@ -70,19 +70,6 @@
   "Class subclasses class slot.")
 
 
-;;;
-;;
-
-(defun moped-make-standard-class-metaobject ()
-  "Allocate, initialize and return standard-class metaobject."
-  (let ((instance (make-vector moped-standard-class-num-slots nil)))
-    (aset instance moped-standard-class-tag   'object)
-    (aset instance moped-standard-class-class instance)
-    (moped-initialize-instance-standard-class
-     instance
-     :name 'standard-class)))
-
-
 ;;; "Methods" of the metaobject standard-class
 ;;
 
@@ -148,6 +135,19 @@
 
     (t
      (moped-slot-missing class instance slot-name 'slot-value))))
+
+
+;;; The `standard-class' Object
+;;
+
+(defvar moped-standard-class-metaobject
+  (let ((instance (make-vector moped-standard-class-num-slots nil)))
+    (aset instance moped-standard-class-tag   'object)
+    (aset instance moped-standard-class-class instance)
+    (moped-initialize-instance-standard-class
+     instance
+     :name 'standard-class))
+  "The `standard-class' metaobject.")
 
 (provide 'moped/metaobjects/standard-class)
 ;;; standard-class.el ends here
