@@ -55,6 +55,16 @@
 (put 'invalid-metaclass 'error-message
      "Invalid metaclass")
 
+;; inconsistent-class-hierarchy
+
+(intern "inconsistent-class-hierarchy")
+
+(put 'inconsistent-class-hierarchy 'error-conditions
+     '(error inconsistent-class-hierarchy))
+
+(put 'inconsistent-class-hierarchy 'error-message
+     "Inconsistent class hierarchy")
+
 ;; slot-unbound
 
 (intern "slot-unbound")
