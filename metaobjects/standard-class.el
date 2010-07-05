@@ -24,28 +24,34 @@
 ;; Conceptual definition:
 ;;
 ;; (defclass standard-class ()
-;;  ((name                :name)
-;;   (direct-superclasses :direct-superclasses)
-;;   (subclasses          :subclasses)
-;;   (direct-slots        :direct-slots)
-;;   (effective-slots     :effective-slots)))
+;;  ((name                  :name)
+;;   (direct-superclasses   :direct-superclasses)
+;;   (subclasses            :subclasses)
+;;   (direct-slots          :direct-slots)
+;;   (slots                 :slots)
+;;   (class-precedence-list :class-precedence-list)
+;;   (finalized-p           :finalized-p)
+;;   (direct-methods        :direct-methods)
+;;   (type                  :type)))
 
 
 ;;; History:
 ;;
-;; 0.2 - Changed prefix to moped.
+;; 0.3 - Added slots
 ;;
-;; 0.1 - Initial version.
+;; 0.2 - Changed prefix to moped
+;;
+;; 0.1 - Initial version
 
 
 ;;; Code:
 ;;
 
 
-;;; Storage layout of standard-class
+;;; Storage Layout of `standard-class'
 ;;
 
-(defconst moped-standard-class-num-slots 7
+(defconst moped-standard-class-num-slots 11
   "Number of slots in the class definition object.")
 
 (defconst moped-standard-class-tag 0
@@ -60,13 +66,25 @@
 (defconst moped-standard-class-direct-superclasses 3
   "Class direct superclasses parent slot.")
 
-(defconst moped-standard-class-subclasses 4
-  "Class subclasses class slot.")
+(defconst moped-standard-class-direct-subclasses 4
+  "Class direct subclasses class slot.")
 
 (defconst moped-standard-class-direct-slots 5
   "Class direct superclasses parent slot.")
 
 (defconst moped-standard-class-effective-slots 6
+  "Class subclasses class slot.")
+
+(defconst moped-standard-class-class-precedence-list 7
+  "Class direct superclasses parent slot.")
+
+(defconst moped-standard-class-finalized-p 8
+  "Class subclasses class slot.")
+
+(defconst moped-standard-class-direct-methods 9
+  "Class subclasses class slot.")
+
+(defconst moped-standard-class-type 10
   "Class subclasses class slot.")
 
 
@@ -109,11 +127,14 @@
 					;;(moped-slot-value class :direct-slots)
 					(aref class moped-standard-class-direct-slots))
 				      direct-superclasses)))) ;; TODO recurse
-    (aset instance moped-standard-class-name                name)
-    (aset instance moped-standard-class-direct-superclasses direct-superclasses)
-    (aset instance moped-standard-class-subclasses          nil)
-    (aset instance moped-standard-class-direct-slots        direct-slots)
-    (aset instance moped-standard-class-effective-slots     effective-slots)
+    (aset instance moped-standard-class-name                  name)
+    (aset instance moped-standard-class-direct-superclasses   direct-superclasses)
+    (aset instance moped-standard-class-subclasses            nil)
+    (aset instance moped-standard-class-direct-slots          direct-slots)
+    (aset instance moped-standard-class-effective-slots       effective-slots)
+    (aset instance moped-standard-class-class-precedence-list moped-standard-object-slot-unbound-marker)
+    (aset instance moped-standard-class-type                  (cons 'class (list instance)))
+    (aset instance moped-standard-class-direct-methods        nil)
     instance))
 
 (defun moped-slot-value-using-class-standard-class (instance class slot-name)
@@ -132,6 +153,18 @@
 
     ((:effective-slots effective-slots)
      (aref instance moped-standard-class-effective-slots))
+
+    ((:class-precedence-list class-precedence-list)
+     (aref instance moped-standard-class-class-precedence-list))
+
+    ((:finalized-p finalized-p)
+     (aref instance moped-standard-class-finalized-p))
+
+    ((:direct-methods direct-methods)
+     (aref instance moped-standard-class-direct-methods))
+
+    ((:type type)
+     (aref instance moped-standard-class-type))
 
     (t
      (moped-slot-missing class instance slot-name 'slot-value))))
