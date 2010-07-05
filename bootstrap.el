@@ -31,6 +31,8 @@
 
 ;;; History:
 ;;
+;; 0.3 - Bootstrap version of certain functions
+;;
 ;; 0.2 - Changed prefix to moped
 ;;
 ;; 0.1 - Initial version
@@ -48,33 +50,64 @@
 
 ;;; Bootstrap Functions
 ;;
+;; These functions are poor man's versions of important functions and
+;; generic functions of the meta object system. They are used during
+;; bootstrapping when particular functions are needed but not yet
+;; available.
 
-(defun moped-make-standard-class ()
-  "Allocate, initialize and return standard-class metaobject."
-  (let ((object (make-vector moped-standard-class-num-slots nil)))
-    (aset object moped-standard-class-tag                 'moped-defclass)
-    (aset object moped-standard-class-name                'standard-class)
-    (aset object moped-standard-class-direct-superclasses nil)
-    (aset object moped-standard-class-subclasses          nil)
-    (aset object moped-standard-class-direct-slots        nil)
-    (aset object moped-standard-class-effective-slots     nil)
-    object))
+(defun moped-bootstrap-make-instance-standard-direct-slot-definition (class &rest initargs)
+  "Allocate, initialize and return a `standard-direct-slot-definition' instance."
+  (let ((instance (make-vector 10 nil)))
+    (aset instance 0 'object)
+    (aset instance 1 class)
+    (aset instance 4 (plist-get initargs :name))
+    (aset instance 5 (list (plist-get initargs :initarg)))
+    (aset instance 6 (plist-get initargs :type))
+    (aset instance 7 (or (plist-get initargs :allocation)
+			 'instance))
+    (aset instance 8 (plist-get initargs :initform))
+    (aset instance 9 (plist-get initargs :initfunction))
+    (aset instance 2 (list (plist-get initargs :reader)))
+    (aset instance 3 (list (plist-get initargs :writer)))
+    instance))
+
+(defun moped-bootstrap-slot-definition-location-standard-direct-slot-definition (name class)
+  (let ((slot-index (position
+		     name
+		     (moped-slot-value-using-class-standard-class class nil :slots)
+		     :test #'memq
+		     :key  (lambda (slot)
+			     (cons (aref slot 4) ;; slot name
+				   (aref slot 5) ;; list of initargs
+				   )))))
+    (when slot-index
+      (+ 2 slot-index))))
 
 
 ;;; Actual Bootstrap Sequence
 ;;
 
 (defun moped-bootstrap-object-system ()
-  ""
+  "Bootstrap the Moped object system."
   ;; Clear all classes
   (moped-naming-clear-classes)
+  (moped-naming-clear-generic-functions)
 
-  ;; Create and store metaobject `standard-class'
-  (puthash 'standard-class (moped-make-standard-class)
+  ;; Bootstrap Preparation
+  ;;
+  ;; Create and store preliminary versions of metaobjects:
+  ;; + `standard-class'
+  ;; + `standard-direct-slot-definition'
+  (puthash 'standard-class (moped-make-standard-class-metaobject)
            moped-naming-classes)
+  (puthash 'standard-direct-slot-definition
+	   (moped-make-instance-standard-class
+	    (moped-find-class 'standard-class))
+	   moped-naming-classes)
 
-  ;; Create metaobject `forward-referenced-class'
-  ;; TODO superclass standard-object?
+  ;; Bootstrap Stage 1
+  ;;
+  ;; Create class metaobjects
   (moped-defclass forward-referenced-class () ())
 
   (moped-defclass standard-object () ())
