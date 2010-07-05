@@ -362,6 +362,6 @@
     + [X] Definition :: [[file:./metaobjects/free-generic-functions.el::moped-defgeneric moped-slot-unbound][slot-unbound]]
     + [ ] Test ::
 
-;; Local Variables:
-;; mode: org
-;; End:
+# Local Variables:
+# mode: org
+# End:
