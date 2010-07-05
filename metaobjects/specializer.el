@@ -39,7 +39,10 @@
 ;;
 
 (moped-defclass specializer (metaobject)
-  ((type :initarg :type))) ;; abstract
+  ((direct-methods :initarg  :direct-methods
+		   :type     list
+		   :initform nil)
+   (type           :initarg  :type))) ;; abstract
 
 
 ;;; Metaobject `eql-specializer'
