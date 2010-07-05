@@ -233,6 +233,24 @@ bootstrap stage.")
    :name                'standard-class
    :direct-superclasses (list (moped-find-class 'class)))
 
+  ;; Bootstrap Stage 2
+  ;;
+  ;; Loop over all files containing metaobject definitions a second
+  ;; time. This time, `defclass' forms are ignored while `defgeneric'
+  ;; and `defmethod' forms are executed.
+  (moped-with-bootstrap-functions (moped-class-of
+				   moped-make-instance
+				   ensure-class-using-class-existing
+				   moped-slot-value
+				   moped-set-slot-value
+				   add-method
+				   make-method-lambda)
+    (flet ((ensure-class (name &rest args)
+			 (moped-find-class name t)))
+      (dolist (file moped-bootstrap-sequence)
+	(load
+	 (expand-file-name (concat "metaobjects/" file ".el"))))))
+
   nil)
 
 
