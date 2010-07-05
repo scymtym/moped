@@ -42,6 +42,9 @@
 ;;; Code:
 ;;
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'moped/impl)
 (require 'moped/naming)
 (require 'moped/macros)
@@ -83,6 +86,81 @@
 				   )))))
     (when slot-index
       (+ 2 slot-index))))
+
+(defun moped-bootstrap-moped-class-of (instance)
+  "Bootstrap version of `class-of'"
+  (if (listp instance)
+      (moped-class-of (funcallable-instance-data instance))
+    (aref instance moped-standard-class-class)))
+
+(defun moped-bootstrap-moped-make-instance (class &rest initargs)
+  "Bootstrap version of `make-instance'"
+  (cond
+   ((or (eq class moped-standard-class-metaobject)
+	(eq class (moped-find-class 'funcallable-standard-class)))
+    (apply #'moped-make-instance-standard-class class initargs))
+
+   ((eq class (moped-find-class 'standard-direct-slot-definition))
+    (apply #'moped-make-instance-standard-direct-slot-definition
+	   class initargs))
+
+   ((eq class (moped-find-class 'standard-generic-function))
+    (apply #'moped-make-instance-funcallable-standard-object
+	   class initargs))
+
+   (t
+    (apply #'moped-make-instance-standard-object class initargs)))
+  )
+
+(defun moped-bootstrap-ensure-class-using-class-existing (class name direct-superclasses direct-slots options)
+  "Bootstrap version of `ensure-class-using-class'"
+  (moped-initialize-instance-standard-class
+   class
+   :name                name
+   :direct-superclasses direct-superclasses
+   :direct-slots        direct-slots))
+
+(defun moped-bootstrap-moped-slot-value (instance slot-name)
+  "Bootstrap version of `slot-value'"
+  (cond
+   ((eq (moped-class-of instance) moped-standard-class-metaobject)
+    (moped-slot-value-using-class-standard-class
+     instance (moped-class-of instance) slot-name))
+
+   ((moped-funcallable-standard-object-instance-p instance)
+    (moped-slot-value
+     (funcallable-instance-data instance) slot-name))
+
+   (t
+    (moped-slot-value-using-class-standard-object
+     instance (moped-class-of instance) slot-name)))
+  )
+
+(defun moped-bootstrap-moped-set-slot-value (instance slot-name value)
+  "Bootstrap version of `set-slot-value'"
+  (cond
+   ((moped-funcallable-standard-object-instance-p instance)
+    (moped-oset
+     (funcallable-instance-data instance) slot-name value))
+
+   (t
+    (moped-set-slot-value-using-class-standard-object
+     instance (moped-class-of instance) slot-name value)))
+  )
+
+(defun moped-bootstrap-add-method (generic-function method)
+  "Bootstrap version of `add-method'"
+  (let ((name     (moped-oref generic-function :name))
+	(function (moped-oref method           :function)))
+    (push method (moped-oref generic-function :methods))
+    (moped-oset method :generic-function generic-function)
+    (set-funcallable-instance-function
+     generic-function `(lambda (&rest args)
+			 (call-method ,function args nil nil)))))
+
+(defun moped-bootstrap-make-method-lambda (generic-function method lambda)
+  "Bootstrap version of `make-method-lambda'"
+  (list `(lambda (args &rest ignored) (apply ,lambda args)) nil))
 
 
 ;;; Actual Bootstrap Sequence
