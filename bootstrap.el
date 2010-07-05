@@ -251,6 +251,36 @@ bootstrap stage.")
 	(load
 	 (expand-file-name (concat "metaobjects/" file ".el"))))))
 
+  ;; Bootstrap Stage 3
+  ;;
+  ;; Generic functions have an arbitrary method installed as their
+  ;; funcallable instance function. Fix it by computing discrimination
+  ;; functions and installing them as symbol functions. Some special
+  ;; generic functions concerned with generic function invocation have
+  ;; to be treated specially.
+  (flet ((install-generic (symbol)
+			  (fset symbol (find-generic-function symbol)))
+	 (setup-generic (symbol)
+			(install-discriminating-function
+			 (find-generic-function symbol))
+			(install-generic symbol)))
+    (install-generic 'compute-applicable-methods)      ;; Uses bootstrap method
+    (install-generic 'compute-effective-method)        ;; Uses bootstrap method
+    (install-generic 'compute-discriminating-function) ;; Uses bootstrap method
+    (install-generic 'install-discriminating-function) ;; Uses bootstrap method
+
+    (setup-generic 'slot-value-using-class)
+    (setup-generic 'set-slot-value-using-class)
+
+    (maphash
+     (lambda (symbol ignored)
+       (unless (memq symbol '(compute-effective-method
+			      compute-applicable-methods
+			      install-discriminating-function
+			      compute-discriminating-function))
+	 (setup-generic symbol)))
+     moped-naming-generic-functions))
+
   nil)
 
 
