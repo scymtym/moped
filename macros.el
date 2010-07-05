@@ -37,6 +37,8 @@
 
 ;;; History:
 ;;
+;; 0.3 - Add symbols to current-load-list
+;;
 ;; 0.2 - Changed prefix to moped.
 ;;
 ;; 0.1 - Initial version.
@@ -77,13 +79,18 @@
   (let ((normalized-direct-slots
 	 (mapcar #'moped-macros-normalize-slot-definition
 		 direct-slots)))
-    `(ensure-class (quote ,name)
-		   ,(when direct-superclasses
-		      (list 'quote direct-superclasses))
-		   ,(when normalized-direct-slots
-		      (list 'quote normalized-direct-slots))
-		   ,(when options
-		      (list 'quote options))))
+    `(progn
+       ;; Note: stolen from ert.el
+       (push '(moped-defclass . ,name) current-load-list)
+
+       ;;
+       (ensure-class (quote ,name)
+		     ,(when direct-superclasses
+			(list 'quote direct-superclasses))
+		     ,(when normalized-direct-slots
+			(list 'quote normalized-direct-slots))
+		     ,(when options
+			(list 'quote options)))))
   )
 
 (defmacro moped-defgeneric (name args &rest doc-and-options)
@@ -92,12 +99,17 @@
 
   (multiple-value-bind (doc options)
       (moped-macros-parse-defgeneric-doc-and-options doc-and-options)
-    `(ensure-generic-function (quote ,name)
-			      ,(when args
-				(list 'quote args))
-			      ,doc
-			      ,(when options
-				 (list 'quote options))))
+    `(progn
+       ;; Note: stolen from ert.el
+       (push '(moped-defgeneric . ,name) current-load-list)
+
+       ;;
+       (ensure-generic-function (quote ,name)
+				,(when args
+				   (list 'quote args))
+				,doc
+				,(when options
+				   (list 'quote options)))))
   )
 
 (defmacro moped-defmethod (name &rest qualifiers-args-doc-body)
@@ -120,15 +132,20 @@
 					specialization-args))
 	   (specializers        (mapcar #'moped-macros-generate-specializer
 					arg-specializers)))
-      `(ensure-method (quote ,name)
-		      ,(when specializers
-			 (cons 'list specializers))
-		      ,(when qualifiers
-			 (list 'quote qualifiers))
-		      ,(when arg-names
-			 (list 'quote arg-names))
-		      ,doc
-		      (quote (progn ,@body))))) ;; TODO test for options
+      `(progn
+	 ;; Note: stolen from ert.el
+	 (push '(moped-defmethod . ,name) current-load-list)
+
+	 ;;
+	 (ensure-method (quote ,name)
+			,(when specializers
+			   (cons 'list specializers))
+			,(when qualifiers
+			   (list 'quote qualifiers))
+			,(when arg-names
+			   (list 'quote arg-names))
+			,doc
+			(quote (progn ,@body)))))) ;; TODO test for options
   )
 
 
