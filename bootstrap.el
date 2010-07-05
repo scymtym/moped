@@ -48,8 +48,7 @@
 (require 'moped/impl)
 (require 'moped/naming)
 (require 'moped/macros)
-
-(require 'moped/metaobjects/standard-class)
+(require 'moped/types)
 
 
 ;;; Bootstrap Functions
@@ -166,13 +165,41 @@
 ;;; Actual Bootstrap Sequence
 ;;
 
+(defvar moped-bootstrap-sequence
+  '("standard-class"
+    "standard-object"
+    "slot-definition"
+    "specializer"
+    "funcallable-standard-object"
+    "class"
+    "funcallable-standard-class"
+    "standard-method"
+    "standard-generic-function"
+    "builtin"
+    "forward-referenced-class"
+    "free-generic-functions")
+  "Order in which metaobject definitions are loaded in each
+bootstrap stage.")
+
 (defun moped-bootstrap-object-system ()
   "Bootstrap the Moped object system."
   ;; Clear all classes
   (moped-naming-clear-classes)
   (moped-naming-clear-generic-functions)
 
-  ;; Bootstrap Preparation
+  ;; Bootstrap Preparation 1
+  ;;
+  ;; Disable metaobject creation functions and load metaobject files
+  ;; that contain ordinary functions used by the bootstrap functions
+  ;; defined above.
+  (moped-without-functions (ensure-class
+			    ensure-generic-function
+			    ensure-method)
+    (require 'moped/metaobjects/standard-object)
+    (require 'moped/metaobjects/funcallable-standard-object)
+    (require 'moped/metaobjects/standard-class))
+
+  ;; Bootstrap Preparation 2
   ;;
   ;; Create and store preliminary versions of metaobjects:
   ;; + `standard-class'
@@ -186,23 +213,25 @@
 
   ;; Bootstrap Stage 1
   ;;
-  ;; Create class metaobjects
-  (moped-defclass forward-referenced-class () ())
+  ;; Loop over all files containing metaobject definitions
+  ;; respecting only `defclass' macros, but ignoring `defgeneric'
+  ;; and `defmethod'.
+  (moped-without-functions (ensure-generic-function ensure-method)
+    (moped-with-bootstrap-functions (moped-class-of
+				     moped-make-instance
+				     ensure-class-using-class-existing
+				     moped-slot-value
+				     moped-set-slot-value)
+      (dolist (file moped-bootstrap-sequence)
+	(load
+	 (expand-file-name (concat "metaobjects/" file ".el"))))))
 
-  (moped-defclass standard-object () ())
-
-  (moped-defclass standard-generic-function-10 (standard-object)
-    ((name         :initarg :name
-		   :type    (or symbol list))
-     (methods      :initarg  :methods
-		   :type     standard-method
-		   :initform nil)
-     (method-class :initarg method-class
-		   :type    standard-class)))
-
-  (moped-defclass standard-method (standard-object)
-    ((specializers :initarg :specializers
-		   :type    list)))
+  ;; Between stages 1 and 2, time to introduce some more
+  ;; circularity.
+  (moped-initialize-instance-standard-class
+   moped-standard-class-metaobject
+   :name                'standard-class
+   :direct-superclasses (list (moped-find-class 'class)))
 
   nil)
 
