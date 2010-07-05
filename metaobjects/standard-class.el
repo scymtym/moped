@@ -35,7 +35,7 @@
 ;;
 ;; 0.2 - Changed prefix to moped.
 ;;
-;; 1.0 - Initial version.
+;; 0.1 - Initial version.
 
 
 ;;; Code:
