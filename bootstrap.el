@@ -100,7 +100,7 @@
     (apply #'moped-make-instance-standard-class class initargs))
 
    ((eq class (moped-find-class 'standard-direct-slot-definition))
-    (apply #'moped-make-instance-standard-direct-slot-definition
+    (apply #'moped-bootstrap-make-instance-standard-direct-slot-definition
 	   class initargs))
 
    ((eq class (moped-find-class 'standard-generic-function))
@@ -204,7 +204,7 @@ bootstrap stage.")
   ;; Create and store preliminary versions of metaobjects:
   ;; + `standard-class'
   ;; + `standard-direct-slot-definition'
-  (puthash 'standard-class (moped-make-standard-class-metaobject)
+  (puthash 'standard-class moped-standard-class-metaobject
            moped-naming-classes)
   (puthash 'standard-direct-slot-definition
 	   (moped-make-instance-standard-class
