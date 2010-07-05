@@ -32,6 +32,7 @@
 ;;; History:
 ;;
 ;; 0.3 - Bootstrap version of certain functions
+;;     - Macros for binding bootstrap functions
 ;;
 ;; 0.2 - Changed prefix to moped
 ;;
@@ -126,6 +127,43 @@
 		   :type    list)))
 
   nil)
+
+
+;;; Utility Functions
+;;
+
+(defmacro moped-without-functions (functions &rest body)
+  "Execute BODY with certain functions replaced with `ignore'."
+  (declare (indent 1))
+
+  (let ((bindings))
+    (dolist (function functions)
+      (push
+       `(,function (&rest args) nil)
+       bindings))
+
+    `(flet ,bindings
+       (progn ,@body)))
+  )
+
+(defmacro moped-with-bootstrap-functions (functions &rest body)
+  "Execute BODY with bootstrap versions of FUNCTIONS.
+FUNCTIONS is a list of symbol specifying functions for which
+bootstrap versions should be used."
+  (declare (indent 1))
+
+  (let ((bindings))
+    (dolist (function functions)
+      (let ((target-function
+	     (intern (concat "moped-bootstrap-" (symbol-name function)))))
+	(push
+	 `(,function (&rest args)
+		     (apply (function ,target-function) args))
+	 bindings)))
+
+    `(flet ,bindings
+       (progn ,@body)))
+  )
 
 (provide 'moped/bootstrap)
 ;;; bootstrap.el ends here
